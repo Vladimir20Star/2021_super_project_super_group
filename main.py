@@ -1,4 +1,6 @@
-# import grafic.py разблокировать когда будет готов файл grafic.py
+from grafic import Sections
+import pygame
+
 
 class SuperProject:
     """Главный класс работы программы"""
@@ -13,10 +15,16 @@ class SuperProject:
 
 
 def main():
+    pygame.init()
     project = SuperProject()
-#    menu()
+    sections = Sections()
+    sections_sect_list = [sections.menu, sections.game, sections.profile]
     while not project.finished:
-        pass
+        if False in sections.flag_list:
+            sections_sect_list[sections.flag_list.index(False)]()
+        else:
+            project.finished = True
+    pygame.quit()
 
 
 if __name__ == "__main__":
