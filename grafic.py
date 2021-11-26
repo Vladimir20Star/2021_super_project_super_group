@@ -1,5 +1,5 @@
 import pygame
-from objects import Button
+from objects import Button, Figure
 
 
 class Sections:
@@ -34,7 +34,12 @@ class Sections:
     def game(self):
         pygame.display.update()
         clock = pygame.time.Clock()
+        game_sprites = pygame.sprite.Group()
         back_button = Button(0, 0, 100, 100, 'purple', self.menu_enter, 'back', 20, 30, 40, 'black')
+        human_rock = Figure(540, 600, 117, 172, 'Камень человека.gif', game_sprites, 710, 400)
+        human_scissors = Figure(710, 600, 117, 172, 'Ножницы человека.gif', game_sprites, 710, 400)
+        human_paper = Figure(880, 600, 117, 172, 'Бумага человека.gif', game_sprites, 710, 400)
+        figure_list = [human_rock, human_scissors, human_paper]
         game_button_list = [back_button]
         while not self.game_finished:
             clock.tick(self.FPS)
@@ -44,9 +49,15 @@ class Sections:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for button in game_button_list:
                         button.click(event)
-            self.screen.fill('yellow')
+                    for figure in figure_list:
+                        figure.click(event)
+            for figure in figure_list:
+                if figure.move_flag:
+                    figure.move()
+            self.screen.fill('pink')
             for button in game_button_list:
                 button.draw(self.screen)
+            game_sprites.draw(self.screen)
             pygame.display.update()
 
     def profile(self):
