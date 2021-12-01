@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 1 -- камень
 2 -- бумага
 3 -- ножницы
+Вывод изменен на 
+1 -- камень
+2 -- ножницы
+3 -- бумага
 """
 
 
@@ -127,8 +131,7 @@ def learning():
     plt.show()
 
 
-def test():
-    player = bot = draw = 0
+def predicting(input_str):
     weights_1 = np.array([[-21.13164301, -1.37054036, -16.86976406, 29.30538071, -34.47326956],
                           [48.60277746, -40.69339409, 23.70495276, -50.88796299, -48.15155281],
                           [15.25138701, -14.91345246, -21.40183576, -13.08390208, 10.26623152]])
@@ -137,92 +140,19 @@ def test():
                    [16.75359252],
                    [-11.22556562]])
     b2 = [[-2.93831495]]
-    input_data = np.zeros((5, 1))
+    previous_moves = np.array([int(i) for i in input_str[0]])
 
-    for i in range(5):
-        a = input()
-        if a == "k":
-            player_move = 1
-        elif a == "b":
-            player_move = 2
-        else:
-            player_move = 3
-        input_data[i][0] = player_move
-        output = np.random.randint(1, 3)
-        if output == 1:
-            bot_move = "k"
-        elif output == 2:
-            bot_move = "b"
-        else:
-            bot_move = "n"
+    h = activation(np.dot(weights_1, previous_moves) + b1)
+    prediction = activation(np.dot(weights_2, h) + b2)
+    prediction = round_to(prediction)
 
-        if player_move == output:
-            print(bot_move, "Ничья!")
-        elif player_move == 2:
-            if output > player_move:
-                print(bot_move, "Победил бот")
-            else:
-                print(bot_move, "Победил игрок")
-        elif player_move == 1:
-            if output == 2:
-                print(bot_move, "Победил бот")
-            else:
-                print(bot_move, "Победил игрок")
-        else:
-            if output == 1:
-                print(bot_move, "Победил бот")
-            else:
-                print(bot_move, "Победил игрок")
-
-    for i in range(50):
-        player_data = input()
-        if player_data == "k":
-            player_move = 1
-        elif player_data == "b":
-            player_move = 2
-        else:
-            player_move = 3
-
-        h = activation(np.dot(weights_1, input_data) + b1)
-        prediction = activation(np.dot(weights_2, h) + b2)
-        prediction = round_to(prediction)
-
-        if prediction == 1:
-            bot_move = "k"
-        elif prediction == 2:
-            bot_move = "b"
-        else:
-            bot_move = "n"
-
-        if player_move == prediction:
-            draw += 1
-            print(bot_move, "Ничья!")
-        elif player_move == 2:
-            if prediction > player_move:
-                bot += 1
-                print(bot_move, "Победил бот")
-            else:
-                player += 1
-                print(bot_move, "Победил игрок")
-        elif player_move == 1:
-            if prediction == 2:
-                bot += 1
-                print(bot_move, "Победил бот")
-            else:
-                player += 1
-                print(bot_move, "Победил игрок")
-        else:
-            if prediction == 1:
-                bot += 1
-                print(bot_move, "Победил бот")
-            else:
-                player += 1
-                print(bot_move, "Победил игрок")
-        for j in range(4):
-            input_data[j][0] = input_data[j + 1][0]
-        input_data[4][0] = player_move
-    print(bot / 50, player / 50, draw / 50)
+    if prediction == 1:
+        return 1
+    elif prediction == 2:
+        return 3
+    else:
+        return 2
 
 
 if __name__ == "__main__":
-    test()
+    print("Этот модуль не запускается отдельно.")
