@@ -17,6 +17,7 @@ FIGURE_H_END_X = (WINDOW_WIDTH - 117) // 2
 FIGURE_H_END_Y = WINDOW_HEIGHT // 2 + 10
 FIGURE_B_X = (WINDOW_WIDTH - FIGURE_B_WIDTH) // 2
 FIGURE_B_Y = WINDOW_HEIGHT // 2 - FIGURE_B_HEIGHT - 10
+BLACK = (0, 0, 0)
 
 
 class Sections:
@@ -29,7 +30,7 @@ class Sections:
         self.FPS = 60
         self.countdown = 0
         self.font = pygame.font.Font(None, 500)
-        self.text = self.font.render('', True, 'black')
+        self.text = self.font.render('', True, BLACK)
         self.text_width = self.text.get_width()
         self.text_height = self.text.get_height()
         self.click_flag = False
@@ -71,19 +72,19 @@ class Sections:
         human_paper = objects.Figure(FIGURE_H_CEN_X + 170, FIGURE_H_Y, FIGURE_H_WIDTH, FIGURE_H_HEIGHT,
                                      'Бумага человека.gif', game_sprites, FIGURE_H_END_X, FIGURE_H_END_Y)
         start_button = objects.Button(0, 500, 100, 100, 'purple', self.game_restart, 'start', 20, 30, 40, 'black')
-        figure_list = [human_rock, human_scissors, human_paper]
+        figure_list = [human_rock, human_paper, human_scissors]
         game_button_list = [back_button, start_button]
         self.click_flag = False
         self.game_again = False
         self.figures_active = True
         self.human_figure = 0
         self.font = pygame.font.Font(None, 500)
-        self.text = self.font.render('', True, 'black')
+        self.text = self.font.render('', True, BLACK)
         result = 0
         self.countdown_tick()
         if bot_figure == 1:
             fullname = os.path.join('img', 'Камень бота.gif')
-        elif bot_figure == 2:
+        elif bot_figure == 3:
             fullname = os.path.join('img', 'Ножницы бота.gif')
         else:
             fullname = os.path.join('img', 'Бумага бота.gif')
@@ -115,7 +116,7 @@ class Sections:
                     self.countdown_tick()
                     self.countdown_time = time.time()
             elif not self.click_flag:
-                self.text = self.font.render('', True, 'black')
+                self.text = self.font.render('', True, BLACK)
                 self.text_width = self.text.get_width()
                 self.text_height = self.text.get_height()
                 self.click_flag = True
@@ -124,17 +125,17 @@ class Sections:
                 for figure in figure_list:
                     figure.active = False
                 self.font = pygame.font.Font(None, 350)
-                self.text = self.font.render('', True, 'black')
+                self.text = self.font.render('', True, BLACK)
                 if self.human_figure == 0:
-                    self.text = self.font.render('Не сыграно!', True, 'black')
-                elif (self.human_figure, bot_figure) in [(1, 3), (2, 1), (3, 2)]:
-                    self.text = self.font.render('Поражение!', True, 'black')
+                    self.text = self.font.render('Не сыграно!', True, BLACK)
+                elif (self.human_figure, bot_figure) in [(3, 1), (1, 2), (2, 3)]:
+                    self.text = self.font.render('Поражение!', True, BLACK)
                     result = -1
-                elif (self.human_figure, bot_figure) in [(1, 2), (2, 3), (3, 1)]:
-                    self.text = self.font.render('Победа!', True, 'black')
+                elif (self.human_figure, bot_figure) in [(2, 1), (3, 2), (1, 3)]:
+                    self.text = self.font.render('Победа!', True, BLACK)
                     result = 1
                 else:
-                    self.text = self.font.render('Ничья!', True, 'black')
+                    self.text = self.font.render('Ничья!', True, BLACK)
                 self.text_width = self.text.get_width()
                 self.text_height = self.text.get_height()
                 self.figures_active = False
@@ -172,26 +173,26 @@ class Sections:
         self.menu_finished = False
         self.game_finished = True
         self.profile_finished = True
-        self.flag_list = [self.menu_finished, self.game_finished, self.profile_finished]
+        self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_enter(self):
         self.menu_finished = True
         self.game_finished = False
         self.game_again = False
         self.profile_finished = True
-        self.flag_list = [self.menu_finished, self.game_finished, self.profile_finished]
+        self.flag_list = [self.menu_finished, self.profile_finished]
 
     def profile_enter(self):
         self.menu_finished = True
         self.game_finished = True
         self.profile_finished = False
-        self.flag_list = [self.menu_finished, self.game_finished, self.profile_finished]
+        self.flag_list = [self.menu_finished, self.profile_finished]
 
     def total_exit(self):
         self.menu_finished = True
         self.game_finished = True
         self.profile_finished = True
-        self.flag_list = [self.menu_finished, self.game_finished, self.profile_finished]
+        self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_restart(self):
         self.game_again = True
@@ -203,6 +204,6 @@ class Sections:
         else:
             self.countdown -= 1
         if self.countdown > 0:
-            self.text = self.font.render(str(self.countdown), True, 'black')
+            self.text = self.font.render(str(self.countdown), True, BLACK)
         self.text_width = self.text.get_width()
         self.text_height = self.text.get_height()

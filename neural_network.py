@@ -5,10 +5,6 @@ import matplotlib.pyplot as plt
 1 -- камень
 2 -- бумага
 3 -- ножницы
-Вывод изменен на 
-1 -- камень
-2 -- ножницы
-3 -- бумага
 """
 
 
@@ -40,8 +36,9 @@ def learning():
     a = 0.5
 
     education_string = [
-        "313133211132112223312313122333213213231323131331231131232133322113131313221133213333123313123213331331331332223321",
-        "3223122132111333113221132321322132232223311233122313333323321121332223311332312333311331132231131123322133211332311"]
+        "313133211132112223312313122333213213231323131331231131232133322113131313221133213333123313123213331331331332"
+        "223321322312213211133311322113232132213223222331123312231333332332112133222331133231233331133113223113112332"
+        "2133211332311"]
 
     training_int1 = np.array([int(i) for i in education_string[0]])  # костыль
     training_int2 = np.array([int(i) for i in education_string[1]])  # костыль
@@ -131,7 +128,7 @@ def learning():
     plt.show()
 
 
-def predicting(input_str):
+def predicting(input_list):
     weights_1 = np.array([[-21.13164301, -1.37054036, -16.86976406, 29.30538071, -34.47326956],
                           [48.60277746, -40.69339409, 23.70495276, -50.88796299, -48.15155281],
                           [15.25138701, -14.91345246, -21.40183576, -13.08390208, 10.26623152]])
@@ -140,18 +137,12 @@ def predicting(input_str):
                    [16.75359252],
                    [-11.22556562]])
     b2 = [[-2.93831495]]
-    previous_moves = np.array([int(i) for i in input_str[0]])
+    previous_moves = np.array([[i] for i in input_list])
 
     h = activation(np.dot(weights_1, previous_moves) + b1)
     prediction = activation(np.dot(weights_2, h) + b2)
     prediction = round_to(prediction)
-
-    if prediction == 1:
-        return 1
-    elif prediction == 2:
-        return 3
-    else:
-        return 2
+    return prediction
 
 
 if __name__ == "__main__":
