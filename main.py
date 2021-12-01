@@ -1,4 +1,4 @@
-from grafic import Sections
+import grafic
 import pygame
 
 
@@ -17,8 +17,8 @@ class SuperProject:
 def main():
     pygame.init()
     project = SuperProject()
-    sections = Sections()
-    sections_sect_list = [sections.menu, sections.game, sections.profile]
+    sections = grafic.Sections()
+    sections_sect_list = [sections.menu, sections.profile]  # FIXME добавить метод sections.game
     while not project.finished:
         if False in sections.flag_list:
             sections_sect_list[sections.flag_list.index(False)]()
