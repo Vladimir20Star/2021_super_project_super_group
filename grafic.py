@@ -5,7 +5,6 @@ import os
 
 pygame.font.init()
 
-
 WINDOW_WIDTH = 1536
 WINDOW_HEIGHT = 864
 FIGURE_H_WIDTH = 117
@@ -154,8 +153,10 @@ class Sections:
         pygame.display.update()
         clock = pygame.time.Clock()
         self.profile_finished = False
+        self.login = False
         back_button = objects.Button(0, 0, 100, 100, 'orange', self.menu_enter, 'back', 20, 30, 40, 'black')
-        profile_button_list = [back_button]
+        login_button = objects.Button(500, 400, 300, 100, 'white', self.write_login, 'ваш логин', 20, 30, 40, 'black')
+        profile_button_list = [back_button, login_button]
         while not self.profile_finished:
             clock.tick(self.FPS)
             for event in pygame.event.get():
@@ -167,7 +168,16 @@ class Sections:
             self.screen.fill('green')
             for button in profile_button_list:
                 button.draw(self.screen)
+            if self.login:
+                pygame.draw.rect(self.screen, login_button.color, (login_button.x, login_button.y, login_button.le,
+                                 login_button.h))
+                font = pygame.font.Font(None, login_button.size)
+                text = font.render(str(input()), True, login_button.text_color) #FIXME зависает из-за str(input())
+                self.screen.blit(text, (login_button.x + login_button.x_text, login_button.y + login_button.y_text))
             pygame.display.update()
+
+    def write_login(self):
+        self.login = True
 
     def menu_enter(self):
         self.menu_finished = False
