@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
 """
 1 -- камень
@@ -8,13 +9,20 @@ import matplotlib.pyplot as plt
 """
 
 
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
+
 def activation(x):
-    return 0.5 + 1.5 / (1 + np.exp(-x - 2.5)) + 1.5 / (1 + np.exp(-x + 2.5))
+    return 0.5 + 1.5 / (1 + np.exp(-x - 3)) + 1.5 / (1 + np.exp(-x + 3))
 
 
 def activation_derivative(x):
-    var_1 = np.exp(-x - 2.5)
-    var_2 = np.exp(-x + 2.5)
+    var_1 = np.exp(-x - 3)
+    var_2 = np.exp(-x + 3)
     return 1.5 * var_1 / (1 + var_1) ** 2 + 1.5 * var_2 / (1 + var_2) ** 2
 
 
@@ -34,7 +42,7 @@ def learning():
 
     learning_rate = 0.5
     momentum = 0.5
-    epochs = 200000
+    epochs = 20000
 
     education_set = [
         "313133211132112223312313122333213213231323131331231131232"
@@ -45,7 +53,7 @@ def learning():
     weights_1 = np.random.uniform(-1, 1, (3, 5))
     weights_2 = np.random.uniform(-1, 1, (1, 3))
     b1 = np.random.uniform(-1, 1, (3, 1))
-    b2 = np.random.uniform(-1, 1)
+    b2 = np.random.uniform(-1, 1, (1, 1))
 
     pre_delta_w1 = np.zeros((3, 5))
 
@@ -53,7 +61,7 @@ def learning():
 
     pre_delta_b1 = np.zeros((3, 1))
 
-    pre_delta_b2 = 0
+    pre_delta_b2 = np.zeros((1, 1))
 
     for epoch in range(epochs):
         for training_str in education_set:
@@ -66,8 +74,8 @@ def learning():
                 h = activation(inp_h)
                 s = np.dot(weights_2, h) + b2
                 prediction = activation(s)
-                grad_prediction = activation_derivative(s) * (training_int[iteration + 5] - prediction)
 
+                grad_prediction = activation_derivative(s) * (training_int[iteration + 5] - prediction)
                 grad_w2 = (grad_prediction * h).T
                 delta_w2 = grad_w2 * learning_rate + pre_delta_w2 * momentum
                 grad_b2 = grad_prediction
@@ -91,22 +99,27 @@ def learning():
         x.append(epoch)
         y1.append(weights_2[0][0])
         y2.append(weights_2[0][2])
+        if epoch % 1000 == 0:
+            print("Эпоха №" + str(epoch))
 
-    print(weights_1, weights_2, b1, b2)
+    with open("weights.json", "w") as file:
+        json.dump({'weights_1': weights_1, 'weights_2': weights_2, 'b1': b1, 'b2': b2}, file, cls=NumpyEncoder,
+                  indent=4)
+
     plt.plot(x, y1)
     plt.plot(x, y2)
     plt.show()
 
 
 def predicting(input_list):
-    weights_1 = np.array([[-21.13164301, -1.37054036, -16.86976406, 29.30538071, -34.47326956],
-                          [48.60277746, -40.69339409, 23.70495276, -50.88796299, -48.15155281],
-                          [15.25138701, -14.91345246, -21.40183576, -13.08390208, 10.26623152]])
-    weights_2 = np.array([[1.69228692, 1.68394246, 1.9765986]])
-    b1 = np.array([[10.03311103],
-                   [16.75359252],
-                   [-11.22556562]])
-    b2 = [[-2.93831495]]
+    with open("weights.json", "r") as file:
+        json_loads = json.load(file)
+
+    weights_1 = np.asarray(json_loads["weights_1"])
+    weights_2 = np.asarray(json_loads["weights_2"])
+    b1 = np.asarray(json_loads["b1"])
+    b2 = np.asarray(json_loads["b2"])
+
     previous_moves = np.array([[i] for i in input_list])
 
     h = activation(np.dot(weights_1, previous_moves) + b1)
@@ -116,5 +129,4 @@ def predicting(input_list):
 
 
 if __name__ == "__main__":
-    learning()
     print("Этот модуль не запускается отдельно.")
