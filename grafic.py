@@ -26,6 +26,8 @@ class Sections:
         self.game_finished = True
         self.game_again = False
         self.profile_finished = True
+        self.login = False
+        self.profile_login = True
         self.flag_list = [self.menu_finished, self.profile_finished]
         self.FPS = 60
         self.countdown = 0
@@ -161,27 +163,41 @@ class Sections:
         clock = pygame.time.Clock()
         self.profile_finished = False
         self.login = False
+        self.profile_login = True
         back_button = objects.Button(0, 0, 100, 100, 'orange', self.menu_enter, 'back', 20, 30, 40, 'black')
         login_button = objects.Button(500, 400, 300, 100, 'white', self.write_login, 'ваш логин', 20, 30, 40, 'black')
         profile_button_list = [back_button, login_button]
+        name = ''
+        enter = False
         while not self.profile_finished:
             clock.tick(self.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.menu_enter()
+                elif event.type == pygame.KEYDOWN and self.login:
+                    name, enter = self.text_in(name, event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for button in profile_button_list:
                         button.click(event)
-            self.screen.fill('green')
-            for button in profile_button_list:
-                button.draw(self.screen)
             if self.login:
-                pygame.draw.rect(self.screen, login_button.color, (login_button.x, login_button.y, login_button.le,
-                                 login_button.h))
-                font = pygame.font.Font(None, login_button.size)
-                text = font.render(str(input()), True, login_button.text_color) #FIXME зависает из-за str(input())
-                self.screen.blit(text, (login_button.x + login_button.x_text, login_button.y + login_button.y_text))
+                login_button.text = name
+            if enter and name != '':
+                self.profile_login = False
+            self.screen.fill('green')
+            if self.profile_login:
+                login_button.draw(self.screen)
+            back_button.draw(self.screen)
             pygame.display.update()
+
+    def text_in(self, name, num):
+        enter = True
+        if num.key == pygame.K_RETURN:
+            enter = False
+        elif num.key == pygame.K_BACKSPACE:
+            name = name[:-1]
+        else:
+            name += num.unicode
+        return name, enter
 
     def write_login(self):
         self.login = True
@@ -190,6 +206,7 @@ class Sections:
         self.menu_finished = False
         self.game_finished = True
         self.profile_finished = True
+        self.login = False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_enter(self):
@@ -197,18 +214,21 @@ class Sections:
         self.game_finished = False
         self.game_again = False
         self.profile_finished = True
+        self.login = False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def profile_enter(self):
         self.menu_finished = True
         self.game_finished = True
         self.profile_finished = False
+        self.login = False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def total_exit(self):
         self.menu_finished = True
         self.game_finished = True
         self.profile_finished = True
+        self.login = False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_restart(self):
