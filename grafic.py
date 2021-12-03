@@ -3,10 +3,11 @@ import objects
 import time
 import os
 
+pygame.init()
 pygame.font.init()
 
-WINDOW_WIDTH = 1536
-WINDOW_HEIGHT = 864
+WINDOW_WIDTH = pygame.display.Info().current_w
+WINDOW_HEIGHT = pygame.display.Info().current_h
 FIGURE_H_WIDTH = 117
 FIGURE_H_HEIGHT = 172
 FIGURE_B_WIDTH = FIGURE_B_HEIGHT = 200
@@ -44,7 +45,7 @@ class Sections:
         clock = pygame.time.Clock()
         game_button = objects.Button(300, 400, 100, 100, 'red', self.game_enter, 'game', 20, 30, 40, 'black')
         profile_button = objects.Button(600, 400, 100, 100, 'cyan', self.profile_enter, 'profile', 20, 30, 40, 'black')
-        exit_button = objects.Button(900, 400, 100, 100, 'blue', self.total_exit, 'exit', 20, 30, 40, 'black')
+        exit_button = objects.Button(900, 400, 100, 100, 'yellow', self.total_exit, 'exit', 20, 37, 40, 'black')
         menu_button_list = [game_button, profile_button, exit_button]
         while not self.menu_finished:
             clock.tick(self.FPS)
@@ -59,7 +60,7 @@ class Sections:
                 button.draw(self.screen)
             pygame.display.update()
 
-    def game(self, bot_figure, victory_count, draw_count, defeat_count):
+    def game(self, bot_figure, victory_count=0, draw_count=0, defeat_count=0):
         pygame.display.update()
         clock = pygame.time.Clock()
         game_sprites = pygame.sprite.Group()
@@ -96,9 +97,13 @@ class Sections:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.menu_enter()
-                elif event.type == pygame.MOUSEBUTTONDOWN and self.click_flag:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     for button in game_button_list:
-                        button.click(event)
+                        if button == start_button:
+                            if self.click_flag:
+                                button.click(event)
+                        else:
+                            button.click(event)
                     for figure in figure_list:
                         if figure.active:
                             figure.click(event)
@@ -107,9 +112,10 @@ class Sections:
                                 for fig in figure_list:
                                     fig.active = False
                                 break
-            for figure in figure_list:
-                if figure.move_flag:
-                    figure.move()
+            if self.click_flag:
+                for figure in figure_list:
+                    if figure.move_flag:
+                        figure.move()
             if self.countdown > 0:
                 if time.time() - self.countdown_time > 1:
                     self.countdown_tick()
@@ -120,27 +126,28 @@ class Sections:
                 self.text_height = self.text.get_height()
                 self.click_flag = True
                 self.click_time = time.time()
-            if self.click_flag and time.time() - self.click_time > 0.5 and self.figures_active:
-                for figure in figure_list:
-                    figure.active = False
-                self.font = pygame.font.Font(None, 350)
-                self.text = self.font.render('', True, BLACK)
-                if self.human_figure == 0:
-                    self.text = self.font.render('Не сыграно!', True, BLACK)
-                elif (self.human_figure, bot_figure) in [(3, 1), (1, 2), (2, 3)]:
-                    self.text = self.font.render('Поражение!', True, BLACK)
-                    result = -1
-                elif (self.human_figure, bot_figure) in [(2, 1), (3, 2), (1, 3)]:
-                    self.text = self.font.render('Победа!', True, BLACK)
-                    result = 1
-                else:
-                    self.text = self.font.render('Ничья!', True, BLACK)
-                self.text_width = self.text.get_width()
-                self.text_height = self.text.get_height()
-                self.figures_active = False
             self.screen.fill('pink')
-            if self.click_flag and time.time() - self.click_time > 0.25:
-                self.screen.blit(bot_figure_image, (FIGURE_B_X, FIGURE_B_Y))
+            if self.click_flag and time.time() - self.click_time > 0.5:
+                if self.figures_active:
+                    for figure in figure_list:
+                        figure.active = False
+                    self.font = pygame.font.Font(None, 350)
+                    self.text = self.font.render('', True, BLACK)
+                    if self.human_figure == 0:
+                        self.text = self.font.render('Не сыграно!', True, BLACK)
+                    elif (self.human_figure, bot_figure) in [(3, 1), (1, 2), (2, 3)]:
+                        self.text = self.font.render('Поражение!', True, BLACK)
+                        result = -1
+                    elif (self.human_figure, bot_figure) in [(2, 1), (3, 2), (1, 3)]:
+                        self.text = self.font.render('Победа!', True, BLACK)
+                        result = 1
+                    else:
+                        self.text = self.font.render('Ничья!', True, BLACK)
+                    self.text_width = self.text.get_width()
+                    self.text_height = self.text.get_height()
+                    self.figures_active = False
+                if self.human_figure != 0:
+                    self.screen.blit(bot_figure_image, (FIGURE_B_X, FIGURE_B_Y))
             for button in game_button_list:
                 button.draw(self.screen)
             game_sprites.draw(self.screen)
