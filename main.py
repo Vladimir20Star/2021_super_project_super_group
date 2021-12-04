@@ -27,14 +27,15 @@ class Project:
         bot_choice = neural_network.predicting(self.last_choices)
         player_figure, result = sections.game(bot_choice, self.win_score_player, self.draw_score_player,
                                               self.defeat_score_player)
-        self.updating_last_choices(player_figure)
-        # обновление очков результатов
-        if result == 1:
-            self.win_score_player += 1
-        elif result == 0:
-            self.draw_score_player += 1
-        elif result == -1:
-            self.defeat_score_player += 1
+        if player_figure != 0:  # проверяем сыграл ли человек
+            self.updating_last_choices(player_figure)
+            # обновление очков результатов
+            if result == 1:
+                self.win_score_player += 1
+            elif result == 0:
+                self.draw_score_player += 1
+            elif result == -1:
+                self.defeat_score_player += 1
 
 
 def main():
