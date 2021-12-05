@@ -25,7 +25,7 @@ def round_to(x):
         return 2
 
 
-class neural_network:
+class NeuralNetwork:
     def __init__(self):
         with open("weights.json", "r") as file:
             json_loads = json.load(file)
@@ -133,6 +133,6 @@ class neural_network:
 
 
 if __name__ == "__main__":
-    neuron = neural_network()
+    neuron = NeuralNetwork()
     neuron.learning()
     print("Этот модуль не запускается отдельно.")
