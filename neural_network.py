@@ -58,7 +58,7 @@ class NeuralNetwork:
         self.input_h = np.dot(self.weights_1, previous_moves) + self.b1
         self.h = self.activation(self.input_h)
         self.s = np.dot(self.weights_2, self.h) + self.b2
-        self.prediction = round_to(self.activation(self.s))
+        self.prediction = self.activation(self.s)
 
     def learning(self):
         x = []
