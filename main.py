@@ -1,4 +1,4 @@
-import grafic
+import education_grafic as grafic
 import pygame
 import neural_network
 
@@ -17,6 +17,8 @@ class Project:
         self.defeat_score_player = 0  # счёт поражений игрока
         self.last_choices = [1, 2, 3, 1, 3]  # список последних выборов игрока
 
+        self.education_string = ''
+
     def updating_last_choices(self, new_choice):
         """обновление списка последних ходов игрока"""
         for i in range(4):
@@ -26,10 +28,14 @@ class Project:
     def game(self):
         """метод одной итерации игры"""
         neuron.predicting(self.last_choices)
-        player_figure, result = sections.game(neural_network.round_to(neuron.prediction), self.win_score_player, self.draw_score_player,
+        player_figure, result = sections.game(neural_network.round_to(neuron.prediction), self.win_score_player,
+                                              self.draw_score_player,
                                               self.defeat_score_player)
         if player_figure != 0:  # проверяем сыграл ли человек
             self.updating_last_choices(player_figure)
+
+            self.education_string += str(player_figure)
+
             # обновление очков результатов
             if result == 1:
                 self.win_score_player += 1
@@ -50,6 +56,7 @@ def main():
             project.game()
         else:
             project.finished = True
+    print(project.education_string[5: len(project.education_string)])
     pygame.quit()
 
 
