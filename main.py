@@ -1,9 +1,9 @@
 import grafic
 import pygame
-from neural_network import NeuralNetwork
+import neural_network
 
 sections = grafic.Sections()
-neuron = NeuralNetwork()
+neuron = neural_network.NeuralNetwork()
 
 
 class Project:
@@ -26,7 +26,7 @@ class Project:
     def game(self):
         """метод одной итерации игры"""
         neuron.predicting(self.last_choices)
-        player_figure, result = sections.game(neuron.prediction, self.win_score_player, self.draw_score_player,
+        player_figure, result = sections.game(neural_network.round_to(neuron.prediction), self.win_score_player, self.draw_score_player,
                                               self.defeat_score_player)
         if player_figure != 0:  # проверяем сыграл ли человек
             self.updating_last_choices(player_figure)

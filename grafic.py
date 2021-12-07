@@ -18,18 +18,6 @@ FIGURE_H_END_Y = WINDOW_HEIGHT // 2 + 10
 FIGURE_B_X = (WINDOW_WIDTH - FIGURE_B_WIDTH) // 2
 FIGURE_B_Y = WINDOW_HEIGHT // 2 - FIGURE_B_HEIGHT - 10
 BLACK = (0, 0, 0)
-name = ''
-
-
-def text_in(name, num):
-    enter = False
-    if num.key == pygame.K_RETURN:
-        enter = True
-    elif num.key == pygame.K_BACKSPACE:
-        name = name[:-1]
-    elif len(name) < 20 and num.key != pygame.K_SPACE:
-        name += num.unicode
-    return name, enter
 
 
 class Sections:
@@ -47,6 +35,17 @@ class Sections:
         self.click_time = time.time()
         self.human_figure = 0
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.name = ''
+        self.text_enter = False
+
+    def text_in(self, num):
+        self.text_enter = False
+        if num.key == pygame.K_RETURN:
+            self.text_enter = True
+        elif num.key == pygame.K_BACKSPACE:
+            self.name = self.name[:-1]
+        elif len(self.name) < 20 and num.key != pygame.K_SPACE:
+            self.name += num.unicode
 
     def menu(self):
         pygame.display.update()
@@ -173,36 +172,37 @@ class Sections:
         return self.human_figure, result
 
     def profile(self):
-        global name  # FIXME
         pygame.display.update()
         clock = pygame.time.Clock()
-        self.profile_finished, self.login, enter = False, False, False
+        self.profile_finished, self.login, self.text_enter = False, False, False
         back_button = objects.Button(0, 0, 100, 100, 'orange', self.menu_enter, 'back', 20, 30, 40, 'black')
         login_button = objects.Button(WINDOW_WIDTH // 3 - 50, WINDOW_HEIGHT // 2 - 50, 300, 100, 'white',
                                       self.write_login, 'ваш логин', 20, 30, 40, 'black')
-        name_button = objects.Button(550, 180, 300, 100, 'white', self.nothing, name, 38, 30, 40, 'black')
+        name_button = objects.Button(550, 180, 300, 100, 'white', self.nothing, self.name, 38, 30, 40, 'black')
         wins_button = objects.Button(550, 330, 300, 100, 'white', self.nothing, 'wins:', 30, 30, 40, 'black')
         draws_button = objects.Button(550, 480, 300, 100, 'white', self.nothing, 'draws:', 30, 30, 40, 'black')
         defeats_button = objects.Button(550, 630, 300, 100, 'white', self.nothing, 'defeats:', 30, 30, 40, 'black')
         while not self.profile_finished:
             clock.tick(self.FPS)
+            if self.profile_login:  # если ввели логин, то выводится информация про игрока
+                profile_button_list = [back_button, login_button]
+            else:
+                profile_button_list = [back_button, name_button, wins_button, draws_button, defeats_button]
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.menu_enter()
                 elif event.type == pygame.KEYDOWN and self.login:
-                    name, enter = text_in(name, event)
+                    self.text_in(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for button in profile_button_list:
                         button.click(event)
+
             if self.login:
-                login_button.text, name_button.text = name, name
-            if enter and name != '':
+                login_button.text, name_button.text = self.name, self.name
+            if self.text_enter and self.name != '':
                 self.profile_login, self.login = False, False
             self.screen.fill('green')
-            if self.profile_login:
-                profile_button_list = [back_button, login_button]
-            else:
-                profile_button_list = [back_button, name_button, wins_button, draws_button, defeats_button]
             for button in profile_button_list:
                 button.draw(self.screen)
             pygame.display.update()
