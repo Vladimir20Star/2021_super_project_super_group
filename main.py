@@ -1,4 +1,4 @@
-import education_grafic as grafic
+import grafic
 import pygame
 import neural_network
 

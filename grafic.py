@@ -23,40 +23,48 @@ BLACK = (0, 0, 0)
 class Sections:
     def __init__(self):
         (self.menu_finished, self.game_finished, self.game_again, self.profile_finished, self.login,
-         self.profile_login, self.click_flag, self.figures_active) = False, True, False, True, False, True, False, True
+         self.profile_login, self.click_flag, self.figures_active, self.text_enter, self.login_please_caption) = \
+            False, True, False, True, False, True, False, True, False, False
         self.flag_list = [self.menu_finished, self.profile_finished]
         self.FPS = 60
         self.countdown = 0
-        self.font = pygame.font.Font(None, 500)
-        self.text = self.font.render('', True, BLACK)
-        self.text_width = self.text.get_width()
-        self.text_height = self.text.get_height()
+        self.big_font = pygame.font.Font(None, int(500 * WINDOW_WIDTH / 1536))
+        self.middle_font = pygame.font.Font(None, int(350 * WINDOW_WIDTH / 1536))
+        self.small_font = pygame.font.Font(None, int(50 * WINDOW_WIDTH / 1536))
+        self.text = self.big_font.render('', True, BLACK)
+        self.text_width, self.text_height = self.text.get_width(), self.text.get_height()
+        self.login_please = self.small_font.render('Пожалуйста, введите логин в разделе profile.', True, BLACK)
+        self.login_please_width = self.login_please.get_width()
+        self.login_please_height = self.login_please.get_height()
         self.countdown_time = time.time()
         self.click_time = time.time()
         self.human_figure = 0
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.name = ''
-        self.text_enter = False
+        self.name = self.unfinished_name = ''
+        self.name_caption = self.small_font.render(self.name, True, BLACK)
+        self.name_caption_width = self.name_caption.get_width()
+        self.name_caption_height = self.name_caption.get_height()
 
     def text_in(self, num):
         self.text_enter = False
         if num.key == pygame.K_RETURN:
             self.text_enter = True
         elif num.key == pygame.K_BACKSPACE:
-            self.name = self.name[:-1]
-        elif len(self.name) < 20 and num.key != pygame.K_SPACE:
-            self.name += num.unicode
+            self.unfinished_name = self.unfinished_name[:-1]
+        elif len(self.unfinished_name) < 20 and num.unicode != '$':
+            self.unfinished_name += num.unicode
 
     def menu(self):
         pygame.display.update()
         clock = pygame.time.Clock()
         game_button = objects.Button(WINDOW_WIDTH // 2 - 350, WINDOW_HEIGHT // 2 - 50, 100, 100, 'red',
-                                     self.game_enter, 'game', 20, 30, 40, 'black')
+                                     self.game_check, 'game', 20, 30, 40, 'black')
         profile_button = objects.Button(WINDOW_WIDTH // 2 - 50, WINDOW_HEIGHT // 2 - 50, 100, 100, 'cyan',
                                         self.profile_enter, 'profile', 20, 30, 40, 'black')
         exit_button = objects.Button(WINDOW_WIDTH // 2 + 250, WINDOW_HEIGHT // 2 - 50, 100, 100, 'yellow',
                                      self.total_exit, 'exit', 20, 37, 40, 'black')
         menu_button_list = [game_button, profile_button, exit_button]
+        self.login_please_caption = False
         while not self.menu_finished:
             clock.tick(self.FPS)
             for event in pygame.event.get():
@@ -68,9 +76,12 @@ class Sections:
             self.screen.fill('grey')
             for button in menu_button_list:
                 button.draw(self.screen)
+            if self.login_please_caption:
+                self.screen.blit(self.login_please, ((WINDOW_WIDTH - self.login_please_width) // 2,
+                                                     (WINDOW_HEIGHT - self.login_please_height * 10) // 2))
             pygame.display.update()
 
-    def game(self, bot_figure, victory_count=0, draw_count=0, defeat_count=0):
+    def game(self, bot_figure, win_count, draw_count, defeat_count):
         pygame.display.update()
         clock = pygame.time.Clock()
         game_sprites = pygame.sprite.Group()
@@ -89,10 +100,12 @@ class Sections:
         self.human_figure = 0
         self.countdown = 5
         self.countdown_time = time.time()
-        self.font = pygame.font.Font(None, 500)
-        self.text = self.font.render(str(self.countdown), True, BLACK)
+        self.text = self.big_font.render(str(self.countdown), True, BLACK)
         self.text_width = self.text.get_width()
         self.text_height = self.text.get_height()
+        self.name_caption = self.small_font.render(self.name, True, BLACK)
+        self.name_caption_width = self.name_caption.get_width()
+        self.name_caption_height = self.name_caption.get_height()
         result = 0
         if bot_figure == 1:
             fullname = os.path.join('img', 'Камень бота.gif')
@@ -118,11 +131,24 @@ class Sections:
                             button.click(event)
                     for figure in figure_list:
                         if figure.active:
+                            if figure.move_flag:
+                                continue
                             figure.click(event)
                             if figure.move_flag:
-                                self.human_figure = figure_list.index(figure) + 1
-                                for fig in figure_list:
-                                    fig.active = False
+                                if self.click_flag:
+                                    if self.human_figure == 0:
+                                        self.human_figure = figure_list.index(figure) + 1
+                                        for fig in figure_list:
+                                            fig.active = False
+                                    else:
+                                        figure.move_flag = False
+                                        figure.image.set_colorkey((255, 0, 0))
+                                else:
+                                    self.human_figure = figure_list.index(figure) + 1
+                                    for fig in figure_list:
+                                        if fig != figure:
+                                            fig.move_flag = False
+                                            fig.image.set_colorkey((255, 0, 0))
                                 break
             if self.click_flag:
                 for figure in figure_list:
@@ -133,7 +159,7 @@ class Sections:
                     self.countdown_tick()
                     self.countdown_time = time.time()
             elif not self.click_flag:
-                self.text = self.font.render('', True, BLACK)
+                self.text = self.middle_font.render('', True, BLACK)
                 self.text_width = self.text.get_width()
                 self.text_height = self.text.get_height()
                 self.click_flag = True
@@ -143,17 +169,16 @@ class Sections:
                 if self.figures_active:
                     for figure in figure_list:
                         figure.active = False
-                    self.font = pygame.font.Font(None, 350)
                     if self.human_figure == 0:
-                        self.text = self.font.render('Не сыграно!', True, BLACK)
+                        self.text = self.middle_font.render('Не сыграно!', True, BLACK)
                     elif (self.human_figure, bot_figure) in [(3, 1), (1, 2), (2, 3)]:
-                        self.text = self.font.render('Поражение!', True, BLACK)
+                        self.text = self.middle_font.render('Поражение!', True, BLACK)
                         result = -1
                     elif (self.human_figure, bot_figure) in [(2, 1), (3, 2), (1, 3)]:
-                        self.text = self.font.render('Победа!', True, BLACK)
+                        self.text = self.middle_font.render('Победа!', True, BLACK)
                         result = 1
                     else:
-                        self.text = self.font.render('Ничья!', True, BLACK)
+                        self.text = self.middle_font.render('Ничья!', True, BLACK)
                     self.text_width = self.text.get_width()
                     self.text_height = self.text.get_height()
                     self.figures_active = False
@@ -166,8 +191,11 @@ class Sections:
                 else:
                     button.draw(self.screen)
             game_sprites.draw(self.screen)
+
             self.screen.blit(self.text, ((WINDOW_WIDTH - self.text_width) // 2,
                                          (WINDOW_HEIGHT - self.text_height) // 2))
+            self.screen.blit(self.name_caption, ((WINDOW_WIDTH - self.name_caption_width) // 2,
+                                                 WINDOW_HEIGHT - self.name_caption_height * 1.75))
             pygame.display.update()
         return self.human_figure, result
 
@@ -182,6 +210,7 @@ class Sections:
         wins_button = objects.Button(550, 330, 300, 100, 'white', self.nothing, 'wins:', 30, 30, 40, 'black')
         draws_button = objects.Button(550, 480, 300, 100, 'white', self.nothing, 'draws:', 30, 30, 40, 'black')
         defeats_button = objects.Button(550, 630, 300, 100, 'white', self.nothing, 'defeats:', 30, 30, 40, 'black')
+        self.unfinished_name = ''
         while not self.profile_finished:
             clock.tick(self.FPS)
             if self.profile_login:  # если ввели логин, то выводится информация про игрока
@@ -198,17 +227,25 @@ class Sections:
                     for button in profile_button_list:
                         button.click(event)
 
-            if self.login:
-                login_button.text, name_button.text = self.name, self.name
-            if self.text_enter and self.name != '':
+            if self.text_enter and self.unfinished_name != '':
+                self.name = self.unfinished_name
+                name_button.text = self.name
                 self.profile_login, self.login = False, False
+            if self.login:
+                login_button.text = self.unfinished_name
             self.screen.fill('green')
             for button in profile_button_list:
                 button.draw(self.screen)
             pygame.display.update()
 
+    def game_check(self):
+        if self.profile_login:
+            self.login_please_caption = True
+        else:
+            self.game_enter()
+
     def nothing(self):
-        print(1)
+        pass
 
     def write_login(self):
         self.login = True
@@ -235,6 +272,6 @@ class Sections:
     def countdown_tick(self):
         self.countdown -= 1
         if self.countdown > 0:
-            self.text = self.font.render(str(self.countdown), True, BLACK)
+            self.text = self.big_font.render(str(self.countdown), True, BLACK)
         self.text_width = self.text.get_width()
         self.text_height = self.text.get_height()
