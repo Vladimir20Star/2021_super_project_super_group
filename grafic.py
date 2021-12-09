@@ -360,7 +360,7 @@ class Sections:
                 for button in profile_button_list:
                     button.click(event)
 
-    def profile(self):
+    def profile(self, win_count, draw_count, defeat_count):
         pygame.display.update()
         clock = pygame.time.Clock()
         self.profile_finished, self.login, self.text_enter = False, False, False
@@ -378,10 +378,28 @@ class Sections:
                 self.profile_name_processing(name_button)
             if self.login:
                 login_button.text = self.unfinished_name
+            for player in self.file_list:
+                if self.name == player[0:player.find('$')]:
+                    for i in range(len(player)):
+                        for j in range(len(player)):
+                            for k in range(len(player)):
+                                if i < j < k and player[i] == player[j] == player[k] == '$':
+                                    wins_button.text = 'wins: ' + str(player[i+1:j])
+                                    draws_button.text = 'draws: ' + str(player[j+1:k])
+                                    defeats_button.text = 'defeats: ' + str(player[k+1:len(player)])
+                    self.login_in_file = True
+            if not self.login_in_file and not self.profile_login: # FIXME эта часть не работает
+                self.file_list.append(self.name + '$0$0$0')
+                wins_button.text = 'wins: ' + '0'
+                draws_button.text = 'draws: ' + '0'
+                defeats_button.text = 'defeats: ' + '0'
+            with open('players.txt', 'w') as file:
+                file.write('\n'.join(self.file_list))
             self.screen.fill('green')
             for button in profile_button_list:
                 button.draw(self.screen)
             pygame.display.update()
+        return win_count, draw_count, defeat_count
 
     def game_check(self):
         if self.profile_login:

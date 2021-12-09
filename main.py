@@ -48,6 +48,9 @@ class Project:
 def main():
     pygame.init()
     project = Project()
+    with open ('players.txt', 'r') as file:
+        file_string = file.read()
+        sections.file_list = file_string.split('\n')
     while not project.finished:
         if not sections.menu_finished:
             sections.menu()
