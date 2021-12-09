@@ -36,7 +36,7 @@ class NeuralNetwork:
     """
 
     def __init__(self):
-        with open("weights.json", "r") as file:
+        with open("data/weights.json", "r") as file:
             json_loads = json.load(file)
 
         self.weights_1 = np.asarray(json_loads["weights_1"])  # Веса от входных нейронов к первому скрытому слою
@@ -95,6 +95,11 @@ class NeuralNetwork:
                          "12321132122122313131213122311132313213222123213213233133312322213123331311232321131223122211122332121231123231231213232133331232322313323113233321332221311311321122233123121313232231",
                          "322311323211321231332331323131233213231332211313223131133121231221332323133213"]
 
+        answers_set = ["1122223312221221322111123132",
+                       "323111231231133213231231222331322213321",
+                       "23132213233233121212321233122213121321333231321321311211123133321231112122313132212331233322233113232312231312312321313211112313133121131221311132113332122122132233311231232121313312",
+                       "133122131322132312113112131212311321312113322121331212211232312332113131211321"]
+
         self.weights_1 = np.random.uniform(-1, 1, (3, 5))
         self.weights_2 = np.random.uniform(-1, 1, (1, 3))
         self.b1 = np.random.uniform(-1, 1, (3, 1))
@@ -143,7 +148,7 @@ class NeuralNetwork:
             if epoch % 1000 == 0:
                 print("Эпоха №" + str(epoch))
 
-        with open("weights.json", "w") as file:
+        with open("data/weights.json", "w") as file:
             json.dump({'weights_1': self.weights_1, 'weights_2': self.weights_2, 'b1': self.b1, 'b2': self.b2},
                       file, cls=NumpyEncoder, indent=4)
 
