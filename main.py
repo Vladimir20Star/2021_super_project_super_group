@@ -44,6 +44,14 @@ class Project:
         self.win_score_player, self.draw_score_player, self.defeat_score_player = sections.profile(
             self.win_score_player, self.draw_score_player, self.defeat_score_player)
 
+    def saving_to_file(self):
+        with open('players.txt', 'w') as file:
+            sections.file_list[sections.player_index] = '$'.join([str(i) for i in [sections.name, self.win_score_player,
+                                                                                   self.draw_score_player,
+                                                                                   self.defeat_score_player]])
+            file_string = '\n'.join(sections.file_list)
+            file.write(file_string)
+
 
 def main():
     pygame.init()
@@ -62,13 +70,7 @@ def main():
             project.finished = True
     if project.win_score_player is not None and project.draw_score_player is not None and project.defeat_score_player \
             is not None:
-        with open('players.txt', 'w') as file:
-            sections.file_list[sections.player_index] = '$'.join([str(i) for i in [sections.name,
-                                                                                   project.win_score_player,
-                                                                                   project.draw_score_player,
-                                                                                   project.defeat_score_player]])
-            file_string = '\n'.join(sections.file_list)
-            file.write(file_string)
+        project.saving_to_file()
     pygame.quit()
 
 
