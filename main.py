@@ -60,6 +60,15 @@ def main():
             project.game()
         else:
             project.finished = True
+    if project.win_score_player is not None and project.draw_score_player is not None and project.defeat_score_player \
+            is not None:
+        with open('players.txt', 'w') as file:
+            sections.file_list[sections.player_index] = '$'.join([str(i) for i in [sections.name,
+                                                                                   project.win_score_player,
+                                                                                   project.draw_score_player,
+                                                                                   project.defeat_score_player]])
+            file_string = '\n'.join(sections.file_list)
+            file.write(file_string)
     pygame.quit()
 
 

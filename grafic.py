@@ -20,6 +20,22 @@ FIGURE_B_Y = FIGURE_H_END_Y - FIGURE_B_HEIGHT
 BLACK = (0, 0, 0)
 
 
+def statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button):
+    game_counts = win_count + draw_count + defeat_count
+    if game_counts == 0:
+        win_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
+        draw_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
+        defeat_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
+    else:
+        win_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count) + ' ' * 9 + \
+                          str(round(win_count * 100 / game_counts)) + '%'
+        draw_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count) + ' ' * 9 + \
+                           str(round(draw_count * 100 / game_counts)) + '%'
+        defeat_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count) + \
+                             ' ' * 9 + str(100 - round(win_count * 100 / game_counts) -
+                                           round(draw_count * 100 / game_counts)) + '%'
+
+
 class Sections:
     def __init__(self):
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -57,21 +73,21 @@ class Sections:
             self.unfinished_name += num.unicode
 
     def menu_buttons_init(self):
-        game_button = objects.Button(WINDOW_WIDTH // 2 - int(350 * WINDOW_WIDTH / 1536),
-                                     WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864), int(100 * WINDOW_WIDTH / 1536),
-                                     int(100 * WINDOW_HEIGHT / 864), 'red', self.game_check, 'game',
-                                     int(40 * WINDOW_WIDTH / 1536), int(14 * WINDOW_WIDTH / 1536),
-                                     int(35 * WINDOW_HEIGHT / 864), 'black')
-        profile_button = objects.Button(WINDOW_WIDTH // 2 - int(50 * WINDOW_WIDTH / 1536),
-                                        WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864),
-                                        int(100 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'cyan',
+        game_button = objects.Button(WINDOW_WIDTH // 2 - int(400 * WINDOW_WIDTH / 1536),
+                                     WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864), int(150 * WINDOW_WIDTH / 1536),
+                                     int(150 * WINDOW_HEIGHT / 864), 'red', self.game_check, 'game',
+                                     int(40 * WINDOW_WIDTH / 1536), int(35 * WINDOW_WIDTH / 1536),
+                                     int(60 * WINDOW_HEIGHT / 864), 'black')
+        profile_button = objects.Button(WINDOW_WIDTH // 2 - int(75 * WINDOW_WIDTH / 1536),
+                                        WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864),
+                                        int(150 * WINDOW_WIDTH / 1536), int(150 * WINDOW_HEIGHT / 864), 'cyan',
                                         self.profile_enter, 'profile', int(40 * WINDOW_WIDTH / 1536),
-                                        int(8 * WINDOW_WIDTH / 1536), int(35 * WINDOW_HEIGHT / 864), 'black')
-        exit_button = objects.Button(WINDOW_WIDTH // 2 + int(250 * WINDOW_WIDTH / 1536),
-                                     WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864), int(100 * WINDOW_WIDTH / 1536),
-                                     int(100 * WINDOW_HEIGHT / 864), 'yellow', self.total_exit, 'exit',
-                                     int(40 * WINDOW_WIDTH / 1536), int(23 * WINDOW_WIDTH / 1536),
-                                     int(35 * WINDOW_HEIGHT / 864), 'black')
+                                        int(30 * WINDOW_WIDTH / 1536), int(60 * WINDOW_HEIGHT / 864), 'black')
+        exit_button = objects.Button(WINDOW_WIDTH // 2 + int(275 * WINDOW_WIDTH / 1536),
+                                     WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864), int(150 * WINDOW_WIDTH / 1536),
+                                     int(150 * WINDOW_HEIGHT / 864), 'yellow', self.total_exit, 'exit',
+                                     int(40 * WINDOW_WIDTH / 1536), int(50 * WINDOW_WIDTH / 1536),
+                                     int(60 * WINDOW_HEIGHT / 864), 'black')
         return game_button, profile_button, exit_button
 
     def menu(self):
@@ -123,22 +139,19 @@ class Sections:
         return name_button, the_rock_name_button, the_rock
 
     def game_statistics_buttons_init(self, win_count, draw_count, defeat_count):
-        win_button = objects.Button(WINDOW_WIDTH - int(275 * WINDOW_WIDTH / 1536), int(10 * WINDOW_HEIGHT / 864),
-                                    int(265 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'green',
-                                    self.nothing, 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count),
-                                    int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
+        win_button = objects.Button(WINDOW_WIDTH - int(420 * WINDOW_WIDTH / 1536), int(10 * WINDOW_HEIGHT / 864),
+                                    int(410 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'green',
+                                    self.nothing, '', int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
                                     (int(44 * WINDOW_HEIGHT / 864) - self.name_caption_height) // 2, 'black')
-        draw_button = objects.Button(WINDOW_WIDTH - int(275 * WINDOW_WIDTH / 1536), int(60 * WINDOW_HEIGHT / 864),
-                                     int(265 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'yellow',
-                                     self.nothing, 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count),
-                                     int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
+        draw_button = objects.Button(WINDOW_WIDTH - int(420 * WINDOW_WIDTH / 1536), int(60 * WINDOW_HEIGHT / 864),
+                                     int(410 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'yellow',
+                                     self.nothing, '', int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
                                      (int(44 * WINDOW_HEIGHT / 864) - self.name_caption_height) // 2, 'black')
-        defeat_button = objects.Button(WINDOW_WIDTH - int(275 * WINDOW_WIDTH / 1536), int(110 * WINDOW_HEIGHT / 864),
-                                       int(265 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'red',
-                                       self.nothing,
-                                       'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count),
-                                       int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
+        defeat_button = objects.Button(WINDOW_WIDTH - int(420 * WINDOW_WIDTH / 1536), int(110 * WINDOW_HEIGHT / 864),
+                                       int(410 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'red',
+                                       self.nothing, '', int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
                                        (int(44 * WINDOW_HEIGHT / 864) - self.name_caption_height) // 2, 'black')
+        statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button)
         return win_button, draw_button, defeat_button
 
     def game_figure_buttons_init(self):
@@ -240,9 +253,7 @@ class Sections:
             self.text_height = self.text.get_height()
             self.figures_active = False
             self.final_human_figure = self.human_figure
-            win_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
-            draw_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
-            defeat_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
+            statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button)
         if self.human_figure != 0:
             self.screen.blit(bot_figure_image, (FIGURE_B_X, FIGURE_B_Y))
         return result
@@ -324,24 +335,24 @@ class Sections:
                                      self.nothing, self.name, int(40 * WINDOW_WIDTH / 1536),
                                      (int(500 * WINDOW_WIDTH / 1536) - self.name_caption_width) // 2,
                                      (int(100 * WINDOW_HEIGHT / 864) - self.name_caption_height) // 2, 'black')
-        wins_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536), int(330 * WINDOW_HEIGHT / 864),
-                                     int(300 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'white',
-                                     self.nothing, 'wins:', int(30 * WINDOW_WIDTH / 1536),
-                                     int(30 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'black')
-        draws_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536),
-                                      int(480 * WINDOW_HEIGHT / 864), int(300 * WINDOW_WIDTH / 1536),
-                                      int(100 * WINDOW_HEIGHT / 864), 'white', self.nothing, 'draws:',
-                                      int(30 * WINDOW_WIDTH / 1536), int(30 * WINDOW_WIDTH / 1536),
-                                      int(40 * WINDOW_HEIGHT / 864), 'black')
-        defeats_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536),
-                                        int(630 * WINDOW_HEIGHT / 864), int(300 * WINDOW_WIDTH / 1536),
-                                        int(100 * WINDOW_HEIGHT / 864), 'white', self.nothing, 'defeats:',
-                                        int(30 * WINDOW_WIDTH / 1536), int(30 * WINDOW_WIDTH / 1536),
-                                        int(40 * WINDOW_HEIGHT / 864), 'black')
-        return name_button, wins_button, draws_button, defeats_button
+        win_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536), int(330 * WINDOW_HEIGHT / 864),
+                                    int(300 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'white',
+                                    self.nothing, '', int(30 * WINDOW_WIDTH / 1536),
+                                    int(8 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'black')
+        draw_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536),
+                                     int(480 * WINDOW_HEIGHT / 864), int(300 * WINDOW_WIDTH / 1536),
+                                     int(100 * WINDOW_HEIGHT / 864), 'white', self.nothing, '',
+                                     int(30 * WINDOW_WIDTH / 1536), int(8 * WINDOW_WIDTH / 1536),
+                                     int(40 * WINDOW_HEIGHT / 864), 'black')
+        defeat_button = objects.Button(WINDOW_WIDTH // 2 - int(150 * WINDOW_WIDTH / 1536),
+                                       int(630 * WINDOW_HEIGHT / 864), int(300 * WINDOW_WIDTH / 1536),
+                                       int(100 * WINDOW_HEIGHT / 864), 'white', self.nothing, '',
+                                       int(30 * WINDOW_WIDTH / 1536), int(8 * WINDOW_WIDTH / 1536),
+                                       int(40 * WINDOW_HEIGHT / 864), 'black')
+        return name_button, win_button, draw_button, defeat_button
 
     def profile_name_processing(self, name_button):
-        self.name = self.unfinished_name
+        self.name = self.unfinished_name.strip()
         name_button.text = self.name
         self.profile_login, self.login = False, False
         self.name_caption = self.font_40.render(self.name, True, BLACK)
@@ -360,45 +371,51 @@ class Sections:
                 for button in profile_button_list:
                     button.click(event)
 
+    def profile_data_processing(self, win_count, draw_count, defeat_count):
+        for i in range(len(self.file_list)):
+            player = self.file_list[i]
+            if self.name == player[:player.find('$')]:
+                self.player_index = i
+                player_list = player.split('$')
+                win_count, draw_count, defeat_count = [int(i) for i in [player_list[1], player_list[2],
+                                                                        player_list[3]]]
+                self.login_in_file = True
+                break
+        if not self.login_in_file:
+            self.file_list.append(self.name + '$0$0$0')
+            self.player_index = len(self.file_list) - 1
+            win_count, draw_count, defeat_count = 0, 0, 0
+        return win_count, draw_count, defeat_count
+
+    def profile_counts_processing(self, win_count, draw_count, defeat_count, win_button, draw_button, defeat_button):
+        if (win_count, draw_count, defeat_count) == (None, None, None):
+            if self.name != '':
+                win_count, draw_count, defeat_count = self.profile_data_processing(win_count, draw_count, defeat_count)
+        else:
+            statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button)
+        return win_count, draw_count, defeat_count
+
     def profile(self, win_count, draw_count, defeat_count):
         pygame.display.update()
         clock = pygame.time.Clock()
         self.profile_finished, self.login, self.text_enter = False, False, False
         back_button, login_button = self.profile_active_buttons_init()
-        name_button, wins_button, draws_button, defeats_button = self.profile_statistics_buttons_init()
+        name_button, win_button, draw_button, defeat_button = self.profile_statistics_buttons_init()
         self.unfinished_name = ''
         while not self.profile_finished:
             clock.tick(self.FPS)
             if self.profile_login:  # если ввели логин, то выводится информация про игрока
                 profile_button_list = [back_button, login_button]
             else:
-                profile_button_list = [back_button, name_button, wins_button, draws_button, defeats_button]
+                profile_button_list = [back_button, name_button, win_button, draw_button, defeat_button]
             self.profile_events_processing(profile_button_list)
-            if self.text_enter and self.unfinished_name != '':
+            if self.text_enter and self.unfinished_name.strip() != '':
                 self.profile_name_processing(name_button)
             if self.login:
                 login_button.text = self.unfinished_name
-            if (win_count, draw_count, defeat_count) == (None, None, None):
-                if self.name != '':
-                    for i in range(len(self.file_list)):
-                        player = self.file_list[i]
-                        if self.name == player[:player.find('$')]:
-                            self.player_index = i
-                            player_list = player.split('$')
-                            win_count, draw_count, defeat_count = player_list[1], player_list[2], player_list[3]
-                            self.login_in_file = True
-                            break
-                    if not self.login_in_file:
-                        self.file_list.append(self.name + '$0$0$0')
-                        self.player_index = len(self.file_list) - 1
-                        win_count, draw_count, defeat_count = 0, 0, 0
-                    wins_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
-                    draws_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
-                    defeats_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
-            else:
-                wins_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
-                draws_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
-                defeats_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
+            win_count, draw_count, defeat_count = self.profile_counts_processing(win_count, draw_count, defeat_count,
+                                                                                 win_button, draw_button,
+                                                                                 defeat_button)
             self.screen.fill('green')
             for button in profile_button_list:
                 button.draw(self.screen)
