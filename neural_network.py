@@ -84,21 +84,16 @@ class NeuralNetwork:
         """
         Обучение нейросети методом обратного распространения
         """
-        x = []
+        x1 = []
+        x2 = []
         y1 = []
         y2 = []
         y3 = []
         y4 = []
+        y21 = []
+        error = np.array([[0]])
 
-        education_set = ["3311112231113113211333312321",
-                         "212333123123322132123123111223211132213",
-                         "12321132122122313131213122311132313213222123213213233133312322213123331311232321131223122211122332121231123231231213232133331232322313323113233321332221311311321122233123121313232231",
-                         "322311323211321231332331323131233213231332211313223131133121231221332323133213"]
-
-        answers_set = ["1122223312221221322111123132",
-                       "323111231231133213231231222331322213321",
-                       "23132213233233121212321233122213121321333231321321311211123133321231112122313132212331233322233113232312231312312321313211112313133121131221311132113332122122132233311231232121313312",
-                       "133122131322132312113112131212311321312113322121331212211232312332113131211321"]
+        file = open("data/education_set.txt", "r")
 
         self.weights_1 = np.random.uniform(-1, 1, (3, 5))
         self.weights_2 = np.random.uniform(-1, 1, (1, 3))
@@ -111,11 +106,15 @@ class NeuralNetwork:
         pre_delta_b2 = np.zeros((1, 1))
 
         for epoch in range(self.epochs):
-            for training_str in education_set:
-                training_int = np.array([int(i) for i in training_str])
+            for line in file.readlines():
+                training_int = np.array([int(i) for i in line.rstrip()])
+
                 for iteration in range(len(training_int) - 5):
                     input_data = [training_int[iteration + i] for i in range(5)]
                     self.predicting(input_data)
+
+                    error[0][0] += ((self.prediction - training_int[iteration + 5]) ** 2) / 2
+
                     input_data = np.asarray(input_data).reshape(-1, 1)
 
                     grad_prediction = self.activation_derivative(self.s) * (training_int[iteration + 5]
@@ -140,24 +139,34 @@ class NeuralNetwork:
                     pre_delta_w2 = delta_w2
                     pre_delta_b1 = delta_b1
                     pre_delta_b2 = delta_b2
-            x.append(epoch)
+            x1.append(epoch)
             y1.append(self.weights_1[0][0])
             y2.append(self.weights_2[0][0])
             y3.append(self.b1[0][0])
             y4.append(self.b2[0][0])
+            x2.append(epoch)
+            y21.append(error[0][0])
+            error = np.array([[0]])
+
             if epoch % 1000 == 0:
                 print("Эпоха №" + str(epoch))
+
+        file.close()
 
         with open("data/weights.json", "w") as file:
             json.dump({'weights_1': self.weights_1, 'weights_2': self.weights_2, 'b1': self.b1, 'b2': self.b2},
                       file, cls=NumpyEncoder, indent=4)
 
-        plt.plot(x, y1)
-        plt.plot(x, y2)
-        plt.plot(x, y3)
-        plt.plot(x, y4)
+        plt.plot(x1, y1)
+        plt.plot(x1, y2)
+        plt.plot(x1, y3)
+        plt.plot(x1, y4)
+        plt.show()
+        plt.plot(x2, y21)
         plt.show()
 
 
 if __name__ == "__main__":
+    neuron = NeuralNetwork()
+    neuron.learning()
     print("Этот модуль не запускается отдельно.")
