@@ -64,12 +64,13 @@ class Sections:
                                       self.name_caption.get_height())
 
     def text_in(self, num):
+        russuans_letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
         self.text_enter = False
         if num.key == pygame.K_RETURN:
             self.text_enter = True
         elif num.key == pygame.K_BACKSPACE:
             self.unfinished_name = self.unfinished_name[:-1]
-        elif len(self.unfinished_name) < 20 and num.unicode != '$':
+        elif len(self.unfinished_name) < 20 and num.unicode != '$' and num.unicode not in russuans_letters:
             self.unfinished_name += num.unicode
 
     def menu_buttons_init(self):
