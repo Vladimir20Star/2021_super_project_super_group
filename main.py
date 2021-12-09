@@ -44,8 +44,14 @@ class Project:
         self.win_score_player, self.draw_score_player, self.defeat_score_player = sections.profile(
             self.win_score_player, self.draw_score_player, self.defeat_score_player)
 
+    @staticmethod
+    def loading_from_file():
+        with open('data/players.txt', 'r') as file:
+            file_string = file.read()
+            sections.file_list = file_string.split('\n')
+
     def saving_to_file(self):
-        with open('players.txt', 'w') as file:
+        with open('data/players.txt', 'w') as file:
             sections.file_list[sections.player_index] = '$'.join([str(i) for i in [sections.name, self.win_score_player,
                                                                                    self.draw_score_player,
                                                                                    self.defeat_score_player]])
@@ -56,9 +62,7 @@ class Project:
 def main():
     pygame.init()
     project = Project()
-    with open('players.txt', 'r') as file:
-        file_string = file.read()
-        sections.file_list = file_string.split('\n')
+    project.loading_from_file()
     while not project.finished:
         if not sections.menu_finished:
             sections.menu()
