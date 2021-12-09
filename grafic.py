@@ -74,21 +74,21 @@ class Sections:
             self.unfinished_name += num.unicode
 
     def menu_buttons_init(self):
-        game_button = objects.Button(WINDOW_WIDTH // 2 - int(350 * WINDOW_WIDTH / 1536),
-                                     WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864), int(100 * WINDOW_WIDTH / 1536),
-                                     int(100 * WINDOW_HEIGHT / 864), 'red', self.game_check, 'game',
-                                     int(40 * WINDOW_WIDTH / 1536), int(14 * WINDOW_WIDTH / 1536),
-                                     int(35 * WINDOW_HEIGHT / 864), 'black')
-        profile_button = objects.Button(WINDOW_WIDTH // 2 - int(50 * WINDOW_WIDTH / 1536),
-                                        WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864),
-                                        int(100 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'cyan',
+        game_button = objects.Button(WINDOW_WIDTH // 2 - int(400 * WINDOW_WIDTH / 1536),
+                                     WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864), int(150 * WINDOW_WIDTH / 1536),
+                                     int(150 * WINDOW_HEIGHT / 864), 'red', self.game_check, 'game',
+                                     int(40 * WINDOW_WIDTH / 1536), int(35 * WINDOW_WIDTH / 1536),
+                                     int(60 * WINDOW_HEIGHT / 864), 'black')
+        profile_button = objects.Button(WINDOW_WIDTH // 2 - int(75 * WINDOW_WIDTH / 1536),
+                                        WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864),
+                                        int(150 * WINDOW_WIDTH / 1536), int(150 * WINDOW_HEIGHT / 864), 'cyan',
                                         self.profile_enter, 'profile', int(40 * WINDOW_WIDTH / 1536),
-                                        int(8 * WINDOW_WIDTH / 1536), int(35 * WINDOW_HEIGHT / 864), 'black')
-        exit_button = objects.Button(WINDOW_WIDTH // 2 + int(250 * WINDOW_WIDTH / 1536),
-                                     WINDOW_HEIGHT // 2 - int(50 * WINDOW_HEIGHT / 864), int(100 * WINDOW_WIDTH / 1536),
-                                     int(100 * WINDOW_HEIGHT / 864), 'yellow', self.total_exit, 'exit',
-                                     int(40 * WINDOW_WIDTH / 1536), int(23 * WINDOW_WIDTH / 1536),
-                                     int(35 * WINDOW_HEIGHT / 864), 'black')
+                                        int(30 * WINDOW_WIDTH / 1536), int(60 * WINDOW_HEIGHT / 864), 'black')
+        exit_button = objects.Button(WINDOW_WIDTH // 2 + int(275 * WINDOW_WIDTH / 1536),
+                                     WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864), int(150 * WINDOW_WIDTH / 1536),
+                                     int(150 * WINDOW_HEIGHT / 864), 'yellow', self.total_exit, 'exit',
+                                     int(40 * WINDOW_WIDTH / 1536), int(50 * WINDOW_WIDTH / 1536),
+                                     int(60 * WINDOW_HEIGHT / 864), 'black')
         return game_button, profile_button, exit_button
 
     def menu(self):

@@ -3,13 +3,15 @@ import matplotlib.pyplot as plt
 import json
 
 """
-1 -- камень
-2 -- бумага
-3 -- ножницы
+Модуль, отвечающий за нейросеть
 """
 
 
 class NumpyEncoder(json.JSONEncoder):
+    """
+    Класс для перевод numpy.array в json
+    """
+
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
@@ -17,6 +19,9 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def round_to(x):
+    """
+    Функция, отвечающая за округление до ближайшего целого в пределах (0.5; 3.5)
+    """
     if 0.5 <= x <= 1.5:
         return 1
     elif x >= 2.5:
@@ -26,33 +31,48 @@ def round_to(x):
 
 
 class NeuralNetwork:
+    """
+    Класс нейросети
+    """
+
     def __init__(self):
         with open("weights.json", "r") as file:
             json_loads = json.load(file)
 
-        self.weights_1 = np.asarray(json_loads["weights_1"])
-        self.weights_2 = np.asarray(json_loads["weights_2"])
-        self.b1 = np.asarray(json_loads["b1"])
-        self.b2 = np.asarray(json_loads["b2"])
+        self.weights_1 = np.asarray(json_loads["weights_1"])  # Веса от входных нейронов к первому скрытому слою
+        self.weights_2 = np.asarray(json_loads["weights_2"])  # Веса от скрытого слоя к выходному нейрону
+        self.b1 = np.asarray(json_loads["b1"])  # Веса нейрона смещения, идущего к скрытому слою
+        self.b2 = np.asarray(json_loads["b2"])  # Вес нейрона смещения, идущего к выходному нейрону
 
-        self.input_h = self.h = np.zeros((3, 1))
-        self.s = self.prediction = np.zeros((1, 1))
+        self.input_h = self.h = np.zeros((3, 1))  # Вспомогательная переменная, равная значению скрытого слоя до
+        # применения функции активации
+        self.s = self.prediction = np.zeros((1, 1))  # Вспомогательная переменная, равная значению выходного нейрона
+        # до применения функции активации
 
-        self.learning_rate = 0.5
-        self.momentum = 0.5
-        self.epochs = 20000
+        self.learning_rate = 0.4  # Скорость обучения нейросети
+        self.momentum = 0.7  # Момент для метода обратного распространения
+        self.epochs = 30000  # Количество эпох обучения
 
     @staticmethod
     def activation(x):
+        """
+        Функция активации для нейросети
+        """
         return 0.5 + 1.5 / (1 + np.exp(-x - 3)) + 1.5 / (1 + np.exp(-x + 3))
 
     @staticmethod
     def activation_derivative(x):
+        """
+        Производная функции активации
+        """
         var_1 = np.exp(-x - 3)
         var_2 = np.exp(-x + 3)
         return 1.5 * var_1 / (1 + var_1) ** 2 + 1.5 * var_2 / (1 + var_2) ** 2
 
     def predicting(self, input_list):
+        """
+        Работа самой нейросети (по входным данным получает выходное значение)
+        """
         previous_moves = np.array([[i] for i in input_list])
 
         self.input_h = np.dot(self.weights_1, previous_moves) + self.b1
@@ -61,17 +81,19 @@ class NeuralNetwork:
         self.prediction = self.activation(self.s)
 
     def learning(self):
+        """
+        Обучение нейросети методом обратного распространения
+        """
         x = []
         y1 = []
         y2 = []
         y3 = []
         y4 = []
 
-        education_set = [
-            "313133211132112223312313122333213213231323131331231131232"
-            "133322113131313221133213333123313123213331331331332223321",
-            "322312213211133311322113232132213223222331123312231333332"
-            "3321121332223311332312333311331132231131123322133211332311"]
+        education_set = ["3311112231113113211333312321",
+                         "212333123123322132123123111223211132213",
+                         "12321132122122313131213122311132313213222123213213233133312322213123331311232321131223122211122332121231123231231213232133331232322313323113233321332221311311321122233123121313232231",
+                         "322311323211321231332331323131233213231332211313223131133121231221332323133213"]
 
         self.weights_1 = np.random.uniform(-1, 1, (3, 5))
         self.weights_2 = np.random.uniform(-1, 1, (1, 3))
@@ -87,7 +109,7 @@ class NeuralNetwork:
             for training_str in education_set:
                 training_int = np.array([int(i) for i in training_str])
                 for iteration in range(len(training_int) - 5):
-                    input_data = [training_int[iteration + i]for i in range(5)]
+                    input_data = [training_int[iteration + i] for i in range(5)]
                     self.predicting(input_data)
                     input_data = np.asarray(input_data).reshape(-1, 1)
 
@@ -133,6 +155,4 @@ class NeuralNetwork:
 
 
 if __name__ == "__main__":
-    neuron = NeuralNetwork()
-    neuron.learning()
     print("Этот модуль не запускается отдельно.")
