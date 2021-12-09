@@ -12,12 +12,10 @@ class Project:
     def __init__(self):
         """функция создания переменных"""
         self.finished = False  # флаг завершения программы
-        self.win_score_player = 0  # счёт побед игрока
-        self.draw_score_player = 0  # счёт ничей игрока
-        self.defeat_score_player = 0  # счёт поражений игрока
+        self.win_score_player = None  # счёт побед игрока
+        self.draw_score_player = None  # счёт ничей игрока
+        self.defeat_score_player = None  # счёт поражений игрока
         self.last_choices = [1, 2, 3, 1, 3]  # список последних выборов игрока
-
-        self.education_string = ''
 
     def updating_last_choices(self, new_choice):
         """обновление списка последних ходов игрока"""
@@ -33,9 +31,6 @@ class Project:
                                               self.defeat_score_player)
         if player_figure != 0:  # проверяем сыграл ли человек
             self.updating_last_choices(player_figure)
-
-            self.education_string += str(player_figure)
-
             # обновление очков результатов
             if result == 1:
                 self.win_score_player += 1
@@ -44,19 +39,27 @@ class Project:
             elif result == -1:
                 self.defeat_score_player += 1
 
+    def profile(self):
+        """метод записи информации профиля"""
+        self.win_score_player, self.draw_score_player, self.defeat_score_player = sections.profile(
+            self.win_score_player, self.draw_score_player, self.defeat_score_player)
+
 
 def main():
     pygame.init()
     project = Project()
-    sections_sect_list = [sections.menu, sections.profile]
+    with open ('players.txt', 'r') as file:
+        file_string = file.read()
+        sections.file_list = file_string.split('\n')
     while not project.finished:
-        if False in sections.flag_list:
-            sections_sect_list[sections.flag_list.index(False)]()
+        if not sections.menu_finished:
+            sections.menu()
+        elif not sections.profile_finished:
+            project.profile()
         elif not sections.game_finished:
             project.game()
         else:
             project.finished = True
-    print(project.education_string[5: len(project.education_string)])
     pygame.quit()
 
 
