@@ -24,8 +24,8 @@ class Sections:
     def __init__(self):
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         (self.menu_finished, self.game_finished, self.game_again, self.profile_finished, self.login,
-         self.profile_login, self.click_flag, self.figures_active, self.text_enter, self.login_please_caption) = \
-            False, True, False, True, False, True, False, True, False, False
+         self.profile_login, self.click_flag, self.figures_active, self.text_enter, self.login_please_caption,
+         self.login_in_file) = False, True, False, True, False, True, False, True, False, False, False
         (self.font_500, self.font_350, self.font_50, self.font_40) = \
             (pygame.font.Font(None, int(500 * WINDOW_WIDTH / 1536)),
              pygame.font.Font(None, int(350 * WINDOW_WIDTH / 1536)),
@@ -33,11 +33,11 @@ class Sections:
              pygame.font.Font(None, int(40 * WINDOW_WIDTH / 1536)))
         self.flag_list = [self.menu_finished, self.profile_finished]
         self.FPS = 60
-        self.countdown = 0
         self.countdown_time = self.click_time = time.time()
-        self.human_figure = self.final_human_figure = self.bot_figure = 0
+        self.human_figure = self.final_human_figure = self.bot_figure = self.countdown = self.player_index = 0
         self.game_sprites = pygame.sprite.Group()
         self.name = self.unfinished_name = ''
+        self.file_list = []
         (self.text, self.login_please, self.name_caption) = \
             (self.font_500.render('', True, BLACK),
              self.font_50.render('Пожалуйста, введите логин в разделе profile.', True, BLACK),
@@ -360,7 +360,7 @@ class Sections:
                 for button in profile_button_list:
                     button.click(event)
 
-    def profile(self):
+    def profile(self, win_count, draw_count, defeat_count):
         pygame.display.update()
         clock = pygame.time.Clock()
         self.profile_finished, self.login, self.text_enter = False, False, False
@@ -378,10 +378,32 @@ class Sections:
                 self.profile_name_processing(name_button)
             if self.login:
                 login_button.text = self.unfinished_name
+            if (win_count, draw_count, defeat_count) == (None, None, None):
+                if self.name != '':
+                    for i in range(len(self.file_list)):
+                        player = self.file_list[i]
+                        if self.name == player[:player.find('$')]:
+                            self.player_index = i
+                            player_list = player.split('$')
+                            win_count, draw_count, defeat_count = player_list[1], player_list[2], player_list[3]
+                            self.login_in_file = True
+                            break
+                    if not self.login_in_file:
+                        self.file_list.append(self.name + '$0$0$0')
+                        self.player_index = len(self.file_list) - 1
+                        win_count, draw_count, defeat_count = 0, 0, 0
+                    wins_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
+                    draws_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
+                    defeats_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
+            else:
+                wins_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
+                draws_button.text = 'Ничьи: ' + ' ' * (14 - len(str(draw_count))) + str(draw_count)
+                defeats_button.text = 'Поражений: ' + ' ' * (5 - len(str(defeat_count))) + str(defeat_count)
             self.screen.fill('green')
             for button in profile_button_list:
                 button.draw(self.screen)
             pygame.display.update()
+        return win_count, draw_count, defeat_count
 
     def game_check(self):
         if self.profile_login:
