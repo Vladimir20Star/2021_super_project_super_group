@@ -51,7 +51,7 @@ class NeuralNetwork:
 
         self.learning_rate = 0.4  # Скорость обучения нейросети
         self.momentum = 0.7  # Момент для метода обратного распространения
-        self.epochs = 10000  # Количество эпох обучения
+        self.epochs = 30000  # Количество эпох обучения
 
     @staticmethod
     def activation(x):
