@@ -51,7 +51,7 @@ class NeuralNetwork:
 
         self.learning_rate = 0.4  # Скорость обучения нейросети
         self.momentum = 0.7  # Момент для метода обратного распространения
-        self.epochs = 30000  # Количество эпох обучения
+        self.epochs = 10000  # Количество эпох обучения
 
     @staticmethod
     def activation(x):
@@ -94,11 +94,13 @@ class NeuralNetwork:
         error = np.array([[0]])
 
         file = open("data/education_set.txt", "r")
+        education_set = file.readlines()
+        file.close()
 
-        self.weights_1 = np.random.uniform(-1, 1, (3, 5))
-        self.weights_2 = np.random.uniform(-1, 1, (1, 3))
-        self.b1 = np.random.uniform(-1, 1, (3, 1))
-        self.b2 = np.random.uniform(-1, 1, (1, 1))
+        self.weights_1 = np.random.uniform(-5, 5, (3, 5))
+        self.weights_2 = np.random.uniform(-5, 5, (1, 3))
+        self.b1 = np.random.uniform(-5, 5, (3, 1))
+        self.b2 = np.random.uniform(-5, 5, (1, 1))
 
         pre_delta_w1 = np.zeros((3, 5))
         pre_delta_w2 = np.zeros((1, 3))
@@ -106,19 +108,26 @@ class NeuralNetwork:
         pre_delta_b2 = np.zeros((1, 1))
 
         for epoch in range(self.epochs):
-            for line in file.readlines():
+            for line in education_set:
                 training_int = np.array([int(i) for i in line.rstrip()])
 
                 for iteration in range(len(training_int) - 5):
                     input_data = [training_int[iteration + i] for i in range(5)]
                     self.predicting(input_data)
 
-                    error[0][0] += ((self.prediction - training_int[iteration + 5]) ** 2) / 2
-
                     input_data = np.asarray(input_data).reshape(-1, 1)
 
-                    grad_prediction = self.activation_derivative(self.s) * (training_int[iteration + 5]
-                                                                            - self.prediction)
+                    if training_int[iteration + 5] == 1:
+                        sample = 2
+                    elif training_int[iteration + 5] == 2:
+                        sample = 3
+                    else:
+                        sample = 1
+
+                    error[0][0] += ((self.prediction - sample) ** 2) / 2
+
+                    grad_prediction = self.activation_derivative(self.s) * (sample - self.prediction)
+
                     grad_w2 = (grad_prediction * self.h).T
                     delta_w2 = grad_w2 * self.learning_rate + pre_delta_w2 * self.momentum
                     grad_b2 = grad_prediction
@@ -150,8 +159,6 @@ class NeuralNetwork:
 
             if epoch % 1000 == 0:
                 print("Эпоха №" + str(epoch))
-
-        file.close()
 
         with open("data/weights.json", "w") as file:
             json.dump({'weights_1': self.weights_1, 'weights_2': self.weights_2, 'b1': self.b1, 'b2': self.b2},
