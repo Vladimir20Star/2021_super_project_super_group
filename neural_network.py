@@ -60,16 +60,16 @@ class NeuralNetwork:
         """
         Функция активации для нейросети
         """
-        return 0.5 + 1.5 / (1 + np.exp(-x - 3)) + 1.5 / (1 + np.exp(-x + 3))
+        return 0.5 + 1.5 / (1 + np.exp(-x * 1.5 - 3)) + 1.5 / (1 + np.exp(-x * 1.5 + 3))
 
     @staticmethod
     def activation_derivative(x):
         """
         Производная функции активации
         """
-        var_1 = np.exp(-x - 3)
-        var_2 = np.exp(-x + 3)
-        return 1.5 * var_1 / (1 + var_1) ** 2 + 1.5 * var_2 / (1 + var_2) ** 2
+        var_1 = np.exp(-x * 1.5 - 3)
+        var_2 = np.exp(-x * 1.5 + 3)
+        return 1.5 * var_1 * 1.5 / (1 + var_1) ** 2 + 1.5 * var_2 * 1.5 / (1 + var_2) ** 2
 
     def predicting(self, input_list):
         """
