@@ -21,6 +21,16 @@ BLACK = (0, 0, 0)
 
 
 def statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button):
+    """
+    Присваивание текстов кнопкам вывода статистики (используется класс кнопок с функцией do_nothing)
+
+    :param win_count: количество побед игрока
+    :param draw_count: количество ничей игрока
+    :param defeat_count: количество поражений игрока
+    :param win_button: объект вывода текста побед игрока
+    :param draw_button: объект вывода текста ничей игрока
+    :param defeat_button: объект вывода текста поражений игрока
+    """
     game_counts = win_count + draw_count + defeat_count
     if game_counts == 0:
         win_button.text = 'Побед: ' + ' ' * (13 - len(str(win_count))) + str(win_count)
@@ -37,10 +47,14 @@ def statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button
 
 
 class Sections:
+    """
+    Класс отсеков игры (menu, game, profile) и их составляющих
+    """
+
     def __init__(self):
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         (self.menu_finished, self.game_finished, self.game_again, self.profile_finished, self.login,
-         self.profile_login, self.click_flag, self.figures_active, self.text_enter, self.login_please_caption,
+         self.profile_login, self.time_end_flag, self.figures_active, self.text_enter, self.login_please_caption,
          self.login_in_file) = False, True, False, True, False, True, False, True, False, False, False
         (self.font_500, self.font_350, self.font_50, self.font_40) = \
             (pygame.font.Font(None, int(500 * WINDOW_WIDTH / 1536)),
@@ -64,6 +78,11 @@ class Sections:
                                       self.name_caption.get_height())
 
     def text_in(self, num):
+        """
+        Ввод текста с клавиатуры
+
+        :param num: pygame.event
+        """
         russuans_letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
         self.text_enter = False
         if num.key == pygame.K_RETURN:
@@ -74,6 +93,11 @@ class Sections:
             self.unfinished_name += num.unicode
 
     def menu_buttons_init(self):
+        """
+        Определение кнопок меню
+
+        :return: кнопка секции game, кнопка секции profile,  кнопка выхода
+        """
         game_button = objects.Button(WINDOW_WIDTH // 2 - int(400 * WINDOW_WIDTH / 1536),
                                      WINDOW_HEIGHT // 2 - int(75 * WINDOW_HEIGHT / 864), int(150 * WINDOW_WIDTH / 1536),
                                      int(150 * WINDOW_HEIGHT / 864), 'red', self.game_check, 'game',
@@ -92,6 +116,7 @@ class Sections:
         return game_button, profile_button, exit_button
 
     def menu(self):
+        """Главный метод секции menu"""
         pygame.display.update()
         clock = pygame.time.Clock()
         game_button, profile_button, exit_button = self.menu_buttons_init()
@@ -114,6 +139,11 @@ class Sections:
             pygame.display.update()
 
     def game_active_buttons_init(self):
+        """
+        Определение скелетных кнопок секции game (back_button, start_button)
+
+        :return: кнопка выхода в меню, кнопка старта
+        """
         back_button = objects.Button(0, 0, int(100 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'purple',
                                      self.menu_enter, 'back', int(40 * WINDOW_WIDTH / 1536),
                                      int(17 * WINDOW_WIDTH / 1536), int(35 * WINDOW_HEIGHT / 864), 'black')
@@ -124,6 +154,11 @@ class Sections:
         return back_button, start_button
 
     def game_names_and_pictures_buttons_init(self):
+        """
+        Определение кнопок вывода имени игрока, имени Скалы и фигуры вывода фото Скалы
+
+        :return: кнопка вывода имени игрока, кнопка вывода 'The Rock', фигура вывода фото Скалы
+        """
         name_button = objects.Button(WINDOW_WIDTH // 2 - int(259 * WINDOW_WIDTH / 1536), int(814 * WINDOW_HEIGHT / 864),
                                      int(517 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'green',
                                      self.nothing, self.name, int(40 * WINDOW_WIDTH / 1536),
@@ -140,6 +175,14 @@ class Sections:
         return name_button, the_rock_name_button, the_rock
 
     def game_statistics_buttons_init(self, win_count, draw_count, defeat_count):
+        """
+        Определение кнопок вывода статистики игрока
+
+        :param win_count: количество побед игрока
+        :param draw_count: количество ничей игрока
+        :param defeat_count: количество поражений игрока
+        :return: кнопка вывода текста победы, кнопка вывода текста ничьей, кнопка вывода текста поражения
+        """
         win_button = objects.Button(WINDOW_WIDTH - int(420 * WINDOW_WIDTH / 1536), int(10 * WINDOW_HEIGHT / 864),
                                     int(410 * WINDOW_WIDTH / 1536), int(40 * WINDOW_HEIGHT / 864), 'green',
                                     self.nothing, '', int(40 * WINDOW_WIDTH / 1536), int(6 * WINDOW_WIDTH / 1536),
@@ -156,6 +199,11 @@ class Sections:
         return win_button, draw_button, defeat_button
 
     def game_figure_buttons_init(self):
+        """
+        Определение фигур, используемых человеком
+
+        :return: фигура камня игрока, фигура ножниц игрока, фигура бумаги игрока
+        """
         human_rock = objects.Figure(FIGURE_H_CEN_X - int(200 * WINDOW_WIDTH / 1536), FIGURE_H_Y, FIGURE_H_WIDTH,
                                     FIGURE_H_HEIGHT, 'Камень человека.gif', self.game_sprites, FIGURE_H_END_X,
                                     FIGURE_H_END_Y)
@@ -167,12 +215,17 @@ class Sections:
         return human_rock, human_scissors, human_paper
 
     def game_bot_figure_image_init(self):
+        """
+        Определение фигуры, которую выведет бот
+
+        :return: сыгранная ботом фигура
+        """
         if self.bot_figure == 1:
             fullname = os.path.join('img', 'Камень бота.gif')
-        elif self.bot_figure == 3:
-            fullname = os.path.join('img', 'Ножницы бота.gif')
-        else:
+        elif self.bot_figure == 2:
             fullname = os.path.join('img', 'Бумага бота.gif')
+        else:
+            fullname = os.path.join('img', 'Ножницы бота.gif')
         image = pygame.image.load(fullname).convert()
         color_key = image.get_at((0, 0))
         image.set_colorkey(color_key)
@@ -180,8 +233,11 @@ class Sections:
         return bot_figure_image
 
     def game_variables_init(self):
+        """
+        Переопределяем переменные перед началом нового цикла (game() == 1 цикл игры)
+        """
         self.game_sprites = pygame.sprite.Group()
-        self.click_flag, self.game_again, self.figures_active = False, False, True
+        self.time_end_flag, self.game_again, self.figures_active = False, False, True
         self.human_figure = 0
         self.countdown = 5
         self.countdown_time = time.time()
@@ -191,7 +247,17 @@ class Sections:
             (self.text.get_width(), self.text.get_height(), self.name_caption.get_width(),
              self.name_caption.get_height())
 
-    def game_determining_outcome(self, result, win_count, draw_count, defeat_count):
+    def game_determining_outcome(self, win_count, draw_count, defeat_count):
+        """
+        Функция определения результата игры
+
+        :param win_count: количество побед игрока
+        :param draw_count: количество ничей игрока
+        :param defeat_count: количество поражений игрока
+        :return: результат (1 - победа, 0 - ничья, -1 - победа, если не сыграно то без разницы),
+        количество побед, количество ничей, количество поражений
+        """
+        result = 0  # по умолчанию ничья
         if self.human_figure == 0:
             self.text = self.font_350.render('Не сыграно!', True, BLACK)
         elif (self.human_figure, self.bot_figure) in [(3, 1), (1, 2), (2, 3)]:
@@ -208,29 +274,41 @@ class Sections:
         return result, win_count, draw_count, defeat_count
 
     def game_choice_processing(self, figure_list, figure):
-        if self.click_flag:
+        """
+        Метод, переобозначающий, какая фигура выбрана
+
+        :param figure_list: список всех фигур человека
+        :param figure: выбранная человеком фигура
+        """
+        if self.time_end_flag:  # если время вышло
             if self.human_figure == 0:
                 self.human_figure = figure_list.index(figure) + 1
                 for fig in figure_list:
                     fig.active = False
             else:
                 figure.move_flag = False
-                figure.image.set_colorkey((255, 0, 0))
-        else:
+                figure.image.set_colorkey((255, 0, 0))  # возвращает фон, невыбранной фигуры
+        else:  # если ещё время осталось
             self.human_figure = figure_list.index(figure) + 1
             for fig in figure_list:
                 if fig != figure:
                     fig.move_flag = False
-                    fig.image.set_colorkey((255, 0, 0))
+                    fig.image.set_colorkey((255, 0, 0))  # возвращает фон, невыбранной фигуры
 
-    def game_events_processing(self, game_button_list, start_button, figure_list):
+    def game_events_processing(self, game_button_list, figure_list):
+        """
+        Обработка событий в секции game
+
+        :param game_button_list: список кнопок секции game
+        :param figure_list: список фигур игрока
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.menu_enter()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for button in game_button_list:
-                    if button == start_button:
-                        if self.click_flag:
+                    if button.text == 'start':
+                        if self.time_end_flag:
                             button.click(event)
                     else:
                         button.click(event)
@@ -245,11 +323,25 @@ class Sections:
 
     def game_final_processing(self, figure_list, result, win_count, draw_count, defeat_count, win_button, draw_button,
                               defeat_button, bot_figure_image):
+        """
+        Обработка результатов одного цикла секции game
+
+        :param figure_list: список фигур игрока
+        :param result: результат (на входе ещё стоит 0 по умолчанию)
+        :param win_count: количество побед
+        :param draw_count: количество ничей
+        :param defeat_count: количество поражений
+        :param win_button: кнопка вывода текста победы
+        :param draw_button: кнопка вывода текста ничьей
+        :param defeat_button: кнопка вывода текста поражения
+        :param bot_figure_image: изображение фигуры, которую сыграл бот
+        :return: результат (1 - победа, 0 - ничья, -1 - победа, если не сыграно то без разницы)
+        """
         if self.figures_active:
             for figure in figure_list:
                 figure.active = False
             result, win_count, draw_count, defeat_count = \
-                self.game_determining_outcome(result, win_count, draw_count, defeat_count)
+                self.game_determining_outcome(win_count, draw_count, defeat_count)
             self.text_width = self.text.get_width()
             self.text_height = self.text.get_height()
             self.figures_active = False
@@ -259,10 +351,15 @@ class Sections:
             self.screen.blit(bot_figure_image, (FIGURE_B_X, FIGURE_B_Y))
         return result
 
-    def game_cycle_draw_objects(self, game_button_list, start_button):
+    def game_cycle_draw_objects(self, game_button_list):
+        """
+        Прорисовка объектов секции game во время игрового цикла
+
+        :param game_button_list: список объектов секции game
+        """
         for button in game_button_list:
-            if button == start_button:
-                if self.click_flag:
+            if button.text == 'start':
+                if self.time_end_flag:
                     button.draw(self.screen)
             else:
                 button.draw(self.screen)
@@ -271,29 +368,52 @@ class Sections:
                                      (WINDOW_HEIGHT - self.text_height) // 2))
 
     def game_countdown_processing(self):
-        if self.countdown > 0:
+        """
+        Обработка обратного отсчёта и отслеживание его завершения
+        """
+        if self.countdown > 0:  # если обратный отсчёт не закончен
             if time.time() - self.countdown_time > 1:
                 self.countdown_tick()
                 self.countdown_time = time.time()
-        elif not self.click_flag:
+        elif not self.time_end_flag:
             self.text = self.font_350.render('', True, BLACK)
             self.text_width = self.text.get_width()
             self.text_height = self.text.get_height()
-            self.click_flag = True
+            self.time_end_flag = True
             self.click_time = time.time()
 
     def game_figure_moving(self, figure_list):
-        if self.click_flag:
+        """
+        После завершения отсчёта начинает двигать выбранную игроком фигуру
+
+        :param figure_list: список фигур игрока
+        """
+        if self.time_end_flag:
             for figure in figure_list:
                 if figure.move_flag:
                     figure.move()
 
-    def game_pre_drawing_processing(self, game_button_list, start_button, figure_list):
-        self.game_events_processing(game_button_list, start_button, figure_list)
+    def game_pre_drawing_processing(self, game_button_list, figure_list):
+        """
+        Обработка всех процессов секции game до вывода результата игры
+
+        :param game_button_list: список кнопок секции game
+        :param figure_list: список фигур игрока
+        """
+        self.game_events_processing(game_button_list, figure_list)
         self.game_figure_moving(figure_list)
         self.game_countdown_processing()
 
     def game(self, bot_figure, win_count, draw_count, defeat_count):
+        """
+        Главный метод секции game, собирающий остальные методы в единый алгоритм
+
+        :param bot_figure: номер фигуры, которую покажет бот
+        :param win_count: количество побед игрока
+        :param draw_count: количество ничей игрока
+        :param defeat_count: количество поражений игрока
+        :return: ход игрока (1-к, 2-б, 3-н, 0-не сыграно), результат игры
+        """
         pygame.display.update()
         clock = pygame.time.Clock()
         self.human_figure = self.final_human_figure = 0
@@ -310,16 +430,21 @@ class Sections:
         bot_figure_image = self.game_bot_figure_image_init()
         while not self.game_finished and not self.game_again:
             clock.tick(self.FPS)
-            self.game_pre_drawing_processing(game_button_list, start_button, figure_list)
+            self.game_pre_drawing_processing(game_button_list, figure_list)
             self.screen.fill('pink')
-            if self.click_flag and time.time() - self.click_time > 0.5:
+            if self.time_end_flag and time.time() - self.click_time > 0.5:
                 result = self.game_final_processing(figure_list, result, win_count, draw_count, defeat_count,
                                                     win_button, draw_button, defeat_button, bot_figure_image)
-            self.game_cycle_draw_objects(game_button_list, start_button)
+            self.game_cycle_draw_objects(game_button_list)
             pygame.display.update()
         return self.final_human_figure, result
 
     def profile_active_buttons_init(self):
+        """
+        Определение кнопок выхода в меню и введения логина
+
+        :return: кнопка выхода в меню, кнопка для введения логина
+        """
         back_button = objects.Button(0, 0, int(100 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'orange',
                                      self.menu_enter, 'back', int(40 * WINDOW_WIDTH / 1536),
                                      int(17 * WINDOW_WIDTH / 1536), int(35 * WINDOW_HEIGHT / 864), 'black')
@@ -331,6 +456,12 @@ class Sections:
         return back_button, login_button
 
     def profile_statistics_buttons_init(self):
+        """
+        Определение кнопок статистики секции profile
+
+        :return: кнопка вывода имени игрока, кнопка вывода количества побед, кнопка вывода количества ничьих,
+        кнопка вывода количества поражений
+        """
         name_button = objects.Button(WINDOW_WIDTH // 2 - int(250 * WINDOW_WIDTH / 1536), int(180 * WINDOW_HEIGHT / 864),
                                      int(500 * WINDOW_WIDTH / 1536), int(100 * WINDOW_HEIGHT / 864), 'white',
                                      self.nothing, self.name, int(40 * WINDOW_WIDTH / 1536),
@@ -353,6 +484,11 @@ class Sections:
         return name_button, win_button, draw_button, defeat_button
 
     def profile_name_processing(self, name_button):
+        """
+        Доопределяет кнопку вывода имени игрока, задавая имя и координаты текста на основе его размеров
+
+        :param name_button: кнопка вывода имени игрока
+        """
         self.name = self.unfinished_name.strip()
         name_button.text = self.name
         self.profile_login, self.login = False, False
@@ -363,6 +499,11 @@ class Sections:
         name_button.y_text = (int(100 * WINDOW_HEIGHT / 864) - self.name_caption_height) // 2
 
     def profile_events_processing(self, profile_button_list):
+        """
+        Обработка событий в секции profile
+
+        :param profile_button_list: кнопки в секции profile
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.menu_enter()
@@ -372,7 +513,13 @@ class Sections:
                 for button in profile_button_list:
                     button.click(event)
 
-    def profile_data_processing(self, win_count, draw_count, defeat_count):
+    def profile_data_processing(self):
+        """
+        Определяет значения побед, ничьих, поражений игрока из файла (если новый логин, то 0,0,0)
+
+        :return: определяет значения: побед игрока, ничьих игрока, поражений игрока
+        """
+        win_count, draw_count, defeat_count = 0, 0, 0
         for i in range(len(self.file_list)):
             player = self.file_list[i]
             if self.name == player[:player.find('$')]:
@@ -385,18 +532,39 @@ class Sections:
         if not self.login_in_file:
             self.file_list.append(self.name + '$0$0$0')
             self.player_index = len(self.file_list) - 1
-            win_count, draw_count, defeat_count = 0, 0, 0
         return win_count, draw_count, defeat_count
 
     def profile_counts_processing(self, win_count, draw_count, defeat_count, win_button, draw_button, defeat_button):
+        """
+        Если победы и тп - None, то обновляет, доставая из файла, иначе выводит статистику а экран
+
+        :param win_count: количество побед игрока
+        :param draw_count: количество ничьих игрока
+        :param defeat_count: количество поражений игрока
+        :param win_button: кнопка вывода количества побед
+        :param draw_button: кнопка вывода количества ничьих
+        :param defeat_button: кнопка вывода количества поражений
+        :return: обновлённые значения (если был None и ввели имя): количество побед игрока, количество ничьих игрока,
+        количество поражений игрока
+        """
+        # None - флаг, что не ввели имя и не записали статистику, если не None, то возращаем без изменения
         if (win_count, draw_count, defeat_count) == (None, None, None):
             if self.name != '':
-                win_count, draw_count, defeat_count = self.profile_data_processing(win_count, draw_count, defeat_count)
+                win_count, draw_count, defeat_count = self.profile_data_processing()
         else:
             statistics_draw(win_count, draw_count, defeat_count, win_button, draw_button, defeat_button)
         return win_count, draw_count, defeat_count
 
     def profile(self, win_count, draw_count, defeat_count):
+        """
+        Главный метод секции profile,
+
+        :param win_count: количество побед игрока
+        :param draw_count: количество ничьих игрока
+        :param defeat_count: количество поражений игрока
+        :return: обновлённые значения (если был None и ввели имя): количество побед игрока, количество ничьих игрока,
+        количество поражений игрока
+        """
         pygame.display.update()
         clock = pygame.time.Clock()
         self.profile_finished, self.login, self.text_enter = False, False, False
@@ -424,37 +592,64 @@ class Sections:
         return win_count, draw_count, defeat_count
 
     def game_check(self):
+        """
+         Проверка, введён ли логин и вызов секции game
+        """
         if self.profile_login:
             self.login_please_caption = True
         else:
             self.game_enter()
 
     def nothing(self):
+        """
+        Пустая функция для создания кнопок вывода текста
+        """
         pass
 
     def write_login(self):
+        """
+        Логин записан
+        """
         self.login = True
 
     def menu_enter(self):
+        """
+        Вход в секцию menu
+        """
         self.menu_finished, self.game_finished, self.profile_finished = False, True, True
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_enter(self):
+        """
+        Вход в секцию game
+        """
         self.menu_finished, self.game_finished, self.profile_finished, self.game_again = True, False, True, False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def profile_enter(self):
+        """
+        Вход в секцию
+        """
         self.menu_finished, self.game_finished, self.profile_finished = True, True, False
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def total_exit(self):
+        """
+        Выход из программы
+        """
         self.menu_finished, self.game_finished, self.profile_finished = True, True, True
         self.flag_list = [self.menu_finished, self.profile_finished]
 
     def game_restart(self):
+        """
+        Начало нового цикла секции game
+        """
         self.game_again = True
 
     def countdown_tick(self):
+        """
+        Обновление обратного отсчёта
+        """
         self.countdown -= 1
         if self.countdown > 0:
             self.text = self.font_500.render(str(self.countdown), True, BLACK)
